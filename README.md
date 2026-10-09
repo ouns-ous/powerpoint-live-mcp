@@ -101,6 +101,15 @@ python generate_slides_from_db.py
 | `ppt_add_animation` | Add entrance animations (fade, zoom, bounce, fly-in...) |
 | `ppt_set_transition` | Add visual slide transitions (fade, push, wipe...) |
 | `ppt_set_speaker_notes` | Add speaker presenter notes |
+| `ppt_add_metric_card` | Add KPI metric widget (large stat, label, and trend/subtext) |
+| `ppt_add_timeline` | Add sleek process flow / roadmap / timeline with numbered steps |
+| `ppt_add_code_block` | Add dark developer code editor mockup with macOS buttons |
+| `ppt_add_bar_chart` | Add clean horizontal vector bar chart with custom colors |
+| `ppt_add_badge` | Add rounded tag / pill badge component |
+| `ppt_export_slide_image` | Export slide to high-res PNG or JPG image (1080p) |
+| `ppt_duplicate_slide` | Duplicate an existing slide |
+| `ppt_move_slide` | Reorder / move slides |
+| `ppt_read_slide_content` | Inspect and read all text, tables, and shapes from slide |
 | `ppt_run_slideshow` | Launch full-screen presentation mode |
 | `ppt_slideshow_next` | Advance slideshow to next step/slide |
 | `ppt_slideshow_previous` | Go back to previous slideshow slide |

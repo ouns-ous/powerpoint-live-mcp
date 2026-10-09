@@ -445,9 +445,255 @@ def ppt_slideshow_exit() -> Dict[str, Any]:
     return controller.slideshow_exit()
 
 
+@mcp.tool()
+def ppt_export_slide_image(
+    slide_index: int,
+    output_path: str,
+    width: int = 1920,
+    height: int = 1080,
+) -> Dict[str, Any]:
+    """Export a slide to high-resolution PNG or JPG image file on disk.
+    Args:
+        slide_index: 1-indexed slide number.
+        output_path: Local destination file path (e.g. 'slide_1.png' or 'slide_1.jpg').
+        width: Image width in pixels (default 1920).
+        height: Image height in pixels (default 1080).
+    """
+    return controller.export_slide_image(
+        slide_index=slide_index,
+        output_path=output_path,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_duplicate_slide(slide_index: int) -> Dict[str, Any]:
+    """Duplicate an existing slide and view the new copy immediately.
+    Args:
+        slide_index: 1-indexed slide number to duplicate.
+    """
+    return controller.duplicate_slide(slide_index=slide_index)
+
+
+@mcp.tool()
+def ppt_move_slide(from_index: int, to_index: int) -> Dict[str, Any]:
+    """Reorder/move a slide to a new position.
+    Args:
+        from_index: Current 1-indexed slide number.
+        to_index: Target 1-indexed position.
+    """
+    return controller.move_slide(from_index=from_index, to_index=to_index)
+
+
+@mcp.tool()
+def ppt_read_slide_content(slide_index: int) -> Dict[str, Any]:
+    """Inspect and extract all text, shapes, tables, coordinates, and notes from a slide.
+    Allows LLM to read existing slides and understand their layout.
+    Args:
+        slide_index: 1-indexed slide number.
+    """
+    return controller.read_slide_content(slide_index=slide_index)
+
+
+@mcp.tool()
+def ppt_add_metric_card(
+    slide_index: int,
+    value: str,
+    label: str,
+    left: float,
+    top: float,
+    width: float = 240,
+    height: float = 140,
+    subtitle: Optional[str] = None,
+    value_color_hex: str = "#2563EB",
+    bg_color_hex: str = "#FFFFFF",
+    border_color_hex: str = "#E2E8F0",
+    accent_bar_color_hex: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Create a prominent KPI metric widget (large bold stat, label, and trend/subtext).
+    Args:
+        slide_index: 1-indexed slide number.
+        value: Large stat string (e.g. '+142%', '$2.4M', '99.9%').
+        label: Metric title (e.g. 'Annual Recurring Revenue').
+        left: X position in points.
+        top: Y position in points.
+        width: Card width in points (default 240).
+        height: Card height in points (default 140).
+        subtitle: Optional trend or secondary text (e.g. '↑ 18% vs last quarter').
+        value_color_hex: Color of the big number (default '#2563EB').
+        bg_color_hex: Card background color.
+        border_color_hex: Card border color.
+        accent_bar_color_hex: Optional top colorful accent stripe.
+    """
+    return controller.add_metric_card(
+        slide_index=slide_index,
+        value=value,
+        label=label,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        subtitle=subtitle,
+        value_color_hex=value_color_hex,
+        bg_color_hex=bg_color_hex,
+        border_color_hex=border_color_hex,
+        accent_bar_color_hex=accent_bar_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_timeline(
+    slide_index: int,
+    steps: List[Dict[str, str]],
+    left: float = 80,
+    top: float = 160,
+    width: float = 800,
+    height: float = 240,
+    accent_color_hex: str = "#3B82F6",
+    bg_color_hex: str = "#FFFFFF",
+) -> Dict[str, Any]:
+    """Create a sleek horizontal roadmap / process flow / timeline with connected numbered nodes and cards.
+    Args:
+        slide_index: 1-indexed slide number.
+        steps: List of dicts with 'title' and 'desc' keys, e.g. [{'title': 'Phase 1', 'desc': 'Discovery'}]
+        left: X position in points.
+        top: Y position in points.
+        width: Total width across which steps will be distributed.
+        height: Total height of the timeline component.
+        accent_color_hex: Color for node circles and accent bars.
+        bg_color_hex: Background color for step cards.
+    """
+    return controller.add_timeline(
+        slide_index=slide_index,
+        steps=steps,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        accent_color_hex=accent_color_hex,
+        bg_color_hex=bg_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_code_block(
+    slide_index: int,
+    code: str,
+    language: str = "python",
+    left: float = 80,
+    top: float = 120,
+    width: float = 800,
+    height: float = 340,
+    bg_color_hex: str = "#18181B",
+    font_size: float = 13,
+) -> Dict[str, Any]:
+    """Create a dark developer code editor mockup with macOS window buttons and monospaced font.
+    Args:
+        slide_index: 1-indexed slide number.
+        code: Source code text (can include multiple lines).
+        language: Programming language name shown in header (e.g. 'python', 'javascript', 'sql').
+        left: X position in points.
+        top: Y position in points.
+        width: Window width in points.
+        height: Window height in points.
+        bg_color_hex: Editor background color (default '#18181B').
+        font_size: Font size in pt (default 13).
+    """
+    return controller.add_code_block(
+        slide_index=slide_index,
+        code=code,
+        language=language,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        bg_color_hex=bg_color_hex,
+        font_size=font_size,
+    )
+
+
+@mcp.tool()
+def ppt_add_bar_chart(
+    slide_index: int,
+    data: List[Dict[str, Any]],
+    left: float = 80,
+    top: float = 140,
+    width: float = 800,
+    height: float = 280,
+    bar_color_hex: str = "#3B82F6",
+    bg_color_hex: str = "#F8FAFC",
+) -> Dict[str, Any]:
+    """Create a clean horizontal vector bar chart with labels and progress bars.
+    Args:
+        slide_index: 1-indexed slide number.
+        data: List of dicts: [{'label': 'Product A', 'value': 85, 'display_value': '$85k', 'color': '#3B82F6'}, ...]
+        left: X position in points.
+        top: Y position in points.
+        width: Chart width in points.
+        height: Chart height in points.
+        bar_color_hex: Default bar fill color.
+        bg_color_hex: Container background color.
+    """
+    return controller.add_bar_chart(
+        slide_index=slide_index,
+        data=data,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        bar_color_hex=bar_color_hex,
+        bg_color_hex=bg_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_badge(
+    slide_index: int,
+    text: str,
+    left: float,
+    top: float,
+    width: Optional[float] = None,
+    height: float = 26,
+    bg_color_hex: str = "#EFF6FF",
+    text_color_hex: str = "#1D4ED8",
+    border_color_hex: Optional[str] = None,
+    font_size: float = 11,
+    bold: bool = True,
+) -> Dict[str, Any]:
+    """Create a rounded tag / pill badge component for categories or statuses.
+    Args:
+        slide_index: 1-indexed slide number.
+        text: Badge text (e.g. 'FEATURED', 'Q3 RELEASE', 'ACTIVE').
+        left: X position in points.
+        top: Y position in points.
+        width: Optional width in points (auto-computed from text length if omitted).
+        height: Height in points (default 26).
+        bg_color_hex: Background fill color.
+        text_color_hex: Text font color.
+        border_color_hex: Optional border color.
+        font_size: Font size in pt (default 11).
+        bold: Whether text is bold.
+    """
+    return controller.add_badge(
+        slide_index=slide_index,
+        text=text,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        bg_color_hex=bg_color_hex,
+        text_color_hex=text_color_hex,
+        border_color_hex=border_color_hex,
+        font_size=font_size,
+        bold=bold,
+    )
+
+
 def main():
     mcp.run()
 
 
 if __name__ == "__main__":
     main()
+

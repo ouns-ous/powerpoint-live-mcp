@@ -74,6 +74,15 @@
 | `ppt_add_animation` | إضافة أنيميشن للشكل (Fade, Zoom, Fly, Bounce...) |
 | `ppt_set_transition` | تعيين حركة الانتقال بين الشرائح (Fade, Push, Wipe...) |
 | `ppt_set_speaker_notes`| إضافة ملاحظات المتحدث للشريحة |
+| `ppt_add_metric_card` | إضافة بطاقة إحصائيات وKPIs برقم عريض ومؤشر الأداء |
+| `ppt_add_timeline` | إضافة مسار زمني ومراحل (Roadmap / Process Flow) مع ترقيم ودوائر |
+| `ppt_add_code_block` | نافذة محرّر أكواد للمطورين (أزرار Mac، خط Consolas، وثيم داكن) |
+| `ppt_add_bar_chart` | إضافة رسم بياني شريطي (Vector Bar Chart) بالنسب والألوان |
+| `ppt_add_badge` | إضافة وسام أو تاج تصنيف (Badge / Pill) للأقسام والحالات |
+| `ppt_export_slide_image`| تصدير أي شريحة كصورة عالية الدقة PNG / JPG بدقة 1080p |
+| `ppt_duplicate_slide` | نسخ ومضاعفة شريحة موجودة بكل تفاصيلها |
+| `ppt_move_slide` | نقل وتغيير ترتيب الشرائح داخل العرض |
+| `ppt_read_slide_content`| قراءة واستخراج جميع النصوص والأشكال والجداول من الشريحة |
 | `ppt_run_slideshow` | تشغيل العرض التقديمي في وضع ملء الشاشة (Slideshow) |
 | `ppt_slideshow_next` | الانتقال للشريحة أو الحركة التالية أثناء العرض |
 | `ppt_slideshow_previous`| الرجوع للشريحة السابقة أثناء العرض |
