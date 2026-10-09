@@ -1,48 +1,39 @@
-# PowerPoint Live Automation MCP Suite 🎬🚀
+# PowerPoint Live Automation MCP Server 🎬🚀
 
-A complete Model Context Protocol (MCP) suite enabling AI coding assistants (**Antigravity**, **Codex**, **Claude**, **Cursor**) to control **Microsoft PowerPoint** on Windows in real-time with visible live updates, animations, and product database integrations.
+A powerful **Model Context Protocol (MCP)** server that enables AI coding assistants (**Antigravity**, **Codex**, **Claude Desktop**, **Cursor**) to control **Microsoft PowerPoint** on Windows in real-time with live visible updates and animations.
+
+Built with **Windows COM Automation (`pywin32`)** and **FastMCP**.
 
 ---
 
 ## 🌟 Highlights
 
-- **Live PowerPoint Automation**: Connects directly to Microsoft PowerPoint desktop via Windows COM (`pywin32`). Watch slides being drawn, shaped, colored, and animated live on your screen.
-- **23 Comprehensive MCP Tools**: Create presentations, add slides, styled text boxes, modern UI cards, custom shapes, data tables, bullet points, animations (fade, zoom, bounce, fly-in), transitions, and remote slideshow control.
-- **Turnkey Database Integrations**: Includes ready-to-use SQLite & JSON product catalogs with automatic PowerPoint generation scripts.
+- **Live Real-Time Automation**: Connects directly to Microsoft PowerPoint desktop. Watch your slides being drawn, shaped, colored, and animated live on your desktop!
+- **Modern Slide Components**: Sleek 16:9 widescreen slides, dark mode gradients, modern UI cards, KPI metrics, timelines/roadmaps, data tables, and developer code windows.
+- **Animations & Transitions**: Entrance animations (fade, zoom, bounce, fly-in), slide transitions, and full presenter controls.
+- **Image Export**: Export any slide directly to 1080p high-resolution PNG or JPG image snapshots.
+- **Bi-directional Slide Inspection**: Read back text, shapes, tables, and notes from any existing slide.
 
 ---
 
 ## 📁 Repository Structure
 
 ```
-├── powerpoint-mcp/                # The Core PowerPoint MCP Server
-│   ├── server.py                  # FastMCP Server (23 Live Tools)
-│   ├── ppt_controller.py          # Windows COM Automation Controller
-│   ├── test_demo.py               # Live Interactive Demo
-│   ├── pyproject.toml             # Dependencies (mcp<2, pywin32, pydantic)
-│   └── README.md                  # Server Documentation & Tool Specs
-│
-├── database_1_produit/            # Single Product Database
-│   ├── products.db                # SQLite Database (Sony WH-1000XM5)
-│   ├── products.json              # Clean JSON Export
-│   ├── schema.sql                 # SQL Schema & Seed Data
-│   └── init_db.py                 # DB Initializer & Queries
-│
-├── database_4_produits/           # 4-Products Catalog Database
-│   ├── products.db                # SQLite Database (4 Diverse Products)
-│   ├── products.json              # Clean JSON Export
-│   ├── schema.sql                 # SQL Schema & Seed Data
-│   ├── init_db.py                 # DB Initializer & Queries
-│   └── generate_slides_from_db.py # Automated PowerPoint Catalog Generator
-│
+├── powerpoint-mcp/
+│   ├── server.py              # FastMCP Server (23 Live Tools)
+│   ├── ppt_controller.py      # Windows COM Automation Controller
+│   ├── test_demo.py           # Live 3-Slide Interactive Demo
+│   ├── test_new_utils.py      # Demo for KPI cards, Timelines, Charts, Code editor
+│   ├── pyproject.toml         # Dependencies (mcp<2, pywin32, pydantic)
+│   └── README.md              # Detailed Documentation
 └── README.md
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Setup
 
-### 1. Configure the MCP Server in Antigravity / Claude Desktop
+### 1. In Antigravity / Claude Desktop
 
 Add this configuration to your `mcp_config.json` (or `claude_desktop_config.json`):
 
@@ -63,19 +54,19 @@ Add this configuration to your `mcp_config.json` (or `claude_desktop_config.json
 }
 ```
 
-### 2. Run the Live Demo
+Or using direct Python executable:
 
-Watch PowerPoint open and create a 3-slide animated presentation on your screen:
-```bash
-cd powerpoint-mcp
-uv run python test_demo.py
-```
-
-### 3. Generate a 5-Slide Presentation from SQLite Database
-
-```bash
-cd database_4_produits
-python generate_slides_from_db.py
+```json
+{
+  "mcpServers": {
+    "powerpoint": {
+      "command": "python",
+      "args": [
+        "C:\\path\\to\\powerpoint-mcp\\server.py"
+      ]
+    }
+  }
+}
 ```
 
 ---
@@ -93,7 +84,7 @@ python generate_slides_from_db.py
 | `ppt_goto_slide` | Navigate editor view to a specific slide |
 | `ppt_set_background` | Set solid color or smooth 2-color gradient background |
 | `ppt_add_textbox` | Add formatted rich text (size, font, color, alignment) |
-| `ppt_add_card` | Add a modern UI container card with title, body, and accent bar |
+| `ppt_add_card` | Add a modern UI container card with title, body, and accent stripe |
 | `ppt_add_shape` | Add auto-shapes (rectangles, rounded rectangles, stars, arrows, etc.) |
 | `ppt_add_bullet_list` | Add a clean bulleted list |
 | `ppt_add_table` | Add styled data tables with custom headers and alternating rows |
@@ -114,6 +105,22 @@ python generate_slides_from_db.py
 | `ppt_slideshow_next` | Advance slideshow to next step/slide |
 | `ppt_slideshow_previous` | Go back to previous slideshow slide |
 | `ppt_slideshow_exit` | Exit slideshow mode back to editor |
+
+---
+
+## 🧪 Live Demos
+
+Run the general demo:
+```bash
+cd powerpoint-mcp
+uv run python test_demo.py
+```
+
+Run the new utilities demo (KPIs, timeline, code editor, bar charts, image export):
+```bash
+cd powerpoint-mcp
+uv run python test_new_utils.py
+```
 
 ---
 
