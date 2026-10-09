@@ -1,0 +1,141 @@
+[
+  {
+    "id": 1,
+    "sku": "SONY-WH1000XM5-BLK",
+    "name": "Casque Sans Fil Sony WH-1000XM5 Noise-Canceling",
+    "brand": "Sony",
+    "category_id": 1,
+    "short_description": "Casque premium circum-auriculaire avec réduction de bruit active et autonomie 30h.",
+    "description": "Le Sony WH-1000XM5 dispose de deux processeurs contrôlant 8 microphones pour une réduction de bruit exceptionnelle. Compatible Hi-Res Audio, Bluetooth multipoint et charge rapide.",
+    "price": 349.99,
+    "compare_at_price": 399.99,
+    "cost_price": 210.0,
+    "currency": "USD",
+    "stock_quantity": 45,
+    "rating": 4.8,
+    "reviews_count": 1240,
+    "is_active": 1,
+    "created_at": "2026-10-09 10:34:43",
+    "updated_at": "2026-10-09 10:34:43",
+    "category_name": "Audio & Casques",
+    "category_slug": "audio-casques",
+    "attributes": {
+      "Couleur": "Noir Mat",
+      "Autonomie": "30 heures avec ANC",
+      "Poids": "250g",
+      "Connexion": "Bluetooth 5.2 / Jack 3.5mm"
+    },
+    "images": [
+      {
+        "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
+        "alt_text": "Sony WH-1000XM5",
+        "is_primary": 1
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "sku": "APPL-MBP16-M3PRO-512",
+    "name": "Apple MacBook Pro 16\" (Puce M3 Pro, 18Go RAM, 512Go SSD)",
+    "brand": "Apple",
+    "category_id": 2,
+    "short_description": "Station de travail portable surpuissante avec écran Liquid Retina XDR 120Hz et puce M3 Pro.",
+    "description": "Conçu pour les créateurs et développeurs exigeants. Écran Liquid Retina XDR de 16,2 pouces, puce M3 Pro avec CPU 12 cœurs et GPU 18 cœurs, autonomie record jusqu'à 22 heures.",
+    "price": 2499.0,
+    "compare_at_price": 2699.0,
+    "cost_price": 1850.0,
+    "currency": "USD",
+    "stock_quantity": 18,
+    "rating": 4.9,
+    "reviews_count": 620,
+    "is_active": 1,
+    "created_at": "2026-10-09 10:34:43",
+    "updated_at": "2026-10-09 10:34:43",
+    "category_name": "Ordinateurs & PC Portables",
+    "category_slug": "ordinateurs-laptops",
+    "attributes": {
+      "Processeur": "Apple M3 Pro (12 cœurs CPU, 18 cœurs GPU)",
+      "Mémoire RAM": "18 Go unifiée",
+      "Stockage": "512 Go SSD NVMe",
+      "Écran": "16.2\" Liquid Retina XDR (3456 x 2234) ProMotion 120Hz",
+      "Couleur": "Noir Sidéral"
+    },
+    "images": [
+      {
+        "image_url": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
+        "alt_text": "Apple MacBook Pro 16 M3",
+        "is_primary": 1
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "sku": "LOGI-MXM3S-GRY",
+    "name": "Souris Ergonomique Logitech MX Master 3S Sans Fil",
+    "brand": "Logitech",
+    "category_id": 3,
+    "short_description": "Souris professionnelle ergonomique avec capteur 8K DPI et clics silencieux.",
+    "description": "L'icône de la productivité repensée: capteur optique 8 000 DPI qui fonctionne sur le verre, molette MagSpeed ultra-rapide (1000 lignes/sec), clics 90% plus discrets et autonomie de 70 jours.",
+    "price": 99.99,
+    "compare_at_price": 119.99,
+    "cost_price": 55.0,
+    "currency": "USD",
+    "stock_quantity": 120,
+    "rating": 4.7,
+    "reviews_count": 3450,
+    "is_active": 1,
+    "created_at": "2026-10-09 10:34:43",
+    "updated_at": "2026-10-09 10:34:43",
+    "category_name": "Périphériques & Écrans",
+    "category_slug": "peripheriques-ecrans",
+    "attributes": {
+      "Capteur": "Darkfield haute précision 8000 DPI",
+      "Molette": "MagSpeed électromagnétique en acier",
+      "Autonomie": "Jusqu'à 70 jours (USB-C rapide)",
+      "Boutons": "7 boutons personnalisables via Logi Options+",
+      "Couleur": "Gris Graphite"
+    },
+    "images": [
+      {
+        "image_url": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7",
+        "alt_text": "Logitech MX Master 3S",
+        "is_primary": 1
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "sku": "SMSG-ODY-G9-OLED-49",
+    "name": "Écran Gaming Incurvé Samsung Odyssey OLED G9 49\" (240Hz, 0.03ms)",
+    "brand": "Samsung",
+    "category_id": 3,
+    "short_description": "Écran géant ultra-large Dual QHD 32:9 incurvé 1800R avec dalle OLED Neo Quantum.",
+    "description": "Une immersion totale: résolution Dual QHD (5120 x 1440), taux de rafraîchissement 240Hz, temps de réponse quasi-instantané de 0.03ms, compatible AMD FreeSync Premium Pro et design métallique ultra-fin.",
+    "price": 1299.99,
+    "compare_at_price": 1799.99,
+    "cost_price": 890.0,
+    "currency": "USD",
+    "stock_quantity": 12,
+    "rating": 4.6,
+    "reviews_count": 410,
+    "is_active": 1,
+    "created_at": "2026-10-09 10:34:43",
+    "updated_at": "2026-10-09 10:34:43",
+    "category_name": "Périphériques & Écrans",
+    "category_slug": "peripheriques-ecrans",
+    "attributes": {
+      "Taille écran": "49 pouces incurvé 1800R (Format 32:9)",
+      "Dalle": "OLED Neo Quantum",
+      "Résolution": "Dual QHD 5120 x 1440 pixels",
+      "Fréquence": "240 Hz",
+      "Temps de réponse": "0.03 ms (GTG)"
+    },
+    "images": [
+      {
+        "image_url": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf",
+        "alt_text": "Samsung Odyssey G9 Monitor",
+        "is_primary": 1
+      }
+    ]
+  }
+]
