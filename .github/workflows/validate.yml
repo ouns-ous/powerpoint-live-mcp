@@ -1,0 +1,27 @@
+name: Validate Python Syntax
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv and dependencies
+        run: |
+          pip install uv
+          uv pip install --system "mcp<2" "pywin32>=306" "pydantic>=2.0"
+
+      - name: Compile and check syntax
+        run: |
+          python -m py_compile powerpoint-mcp/server.py powerpoint-mcp/ppt_controller.py
