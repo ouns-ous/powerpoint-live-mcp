@@ -83,6 +83,14 @@
 | `ppt_duplicate_slide` | نسخ ومضاعفة شريحة موجودة بكل تفاصيلها |
 | `ppt_move_slide` | نقل وتغيير ترتيب الشرائح داخل العرض |
 | `ppt_read_slide_content`| قراءة واستخراج جميع النصوص والأشكال والجداول من الشريحة |
+| `ppt_search_and_replace_text`| البحث والاستبدال الذكي للنصوص والقوالب (`{{VARIABLE}}`) عبر جميع الشرائح |
+| `ppt_add_quote_card` | بطاقة اقتباس أو شهادة عميل (Testimonial Quote) مع اسم القائل والصورة |
+| `ppt_add_pros_cons` | مقارنة جانبية ببطاقتين للإيجابيات والسلبيات (Pros & Cons) |
+| `ppt_add_pricing_table`| جدول خطط الأسعار والاشتراكات (Pricing Table) مع تمييز الباقة الأكثر طلباً |
+| `ppt_add_donut_chart` | رسم دائري لمؤشر التقدم والنسب المئوية (Donut Progress Chart) |
+| `ppt_delete_shape` | حذف شكل معين من الشريحة عبر الاسم أو المعرف (ID) |
+| `ppt_clear_slide` | مسح وتنظيف كل الأشكال من الشريحة لإعادة تعيينها |
+| `ppt_add_footer` | إضافة تذييل احترافي (Footer) مع رقم الشريحة وعبارة السرية على كل الشرائح |
 | `ppt_run_slideshow` | تشغيل العرض التقديمي في وضع ملء الشاشة (Slideshow) |
 | `ppt_slideshow_next` | الانتقال للشريحة أو الحركة التالية أثناء العرض |
 | `ppt_slideshow_previous`| الرجوع للشريحة السابقة أثناء العرض |

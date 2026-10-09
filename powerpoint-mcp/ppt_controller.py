@@ -1213,7 +1213,472 @@ class PowerPointController:
             "shape_id": shape.Id,
         }
 
+    def search_and_replace_text(
+        self,
+        find_text: str,
+        replace_text: str,
+        slide_index: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Find and replace text across slides or within a specific slide."""
+        pres = self.get_presentation()
+        total_replacements = 0
+
+        target_slides = [pres.Slides(slide_index)] if slide_index else [pres.Slides(i) for i in range(1, pres.Slides.Count + 1)]
+
+        for s in target_slides:
+            for shp in s.Shapes:
+                if shp.HasTextFrame and shp.TextFrame.HasText:
+                    tr = shp.TextFrame.TextRange
+                    # Count occurrences
+                    if find_text.lower() in tr.Text.lower():
+                        while True:
+                            found = tr.Replace(find_text, replace_text)
+                            if found is None or found.Length == 0:
+                                break
+                            total_replacements += 1
+
+                # Check tables
+                if shp.HasTable:
+                    for r in range(1, shp.Table.Rows.Count + 1):
+                        for c in range(1, shp.Table.Columns.Count + 1):
+                            cell_tr = shp.Table.Cell(r, c).Shape.TextFrame.TextRange
+                            if find_text.lower() in cell_tr.Text.lower():
+                                while True:
+                                    found = cell_tr.Replace(find_text, replace_text)
+                                    if found is None or found.Length == 0:
+                                        break
+                                    total_replacements += 1
+
+        return {
+            "status": "success",
+            "find_text": find_text,
+            "replace_text": replace_text,
+            "replacements_count": total_replacements,
+            "scope": f"slide {slide_index}" if slide_index else "all slides",
+        }
+
+    def add_quote_card(
+        self,
+        slide_index: int,
+        quote: str,
+        author: str,
+        role: str = "",
+        left: float = 80,
+        top: float = 140,
+        width: float = 800,
+        height: float = 240,
+        bg_color_hex: str = "#FFFFFF",
+        border_color_hex: str = "#E2E8F0",
+        quote_color_hex: str = "#0F172A",
+        accent_color_hex: str = "#3B82F6",
+    ) -> Dict[str, Any]:
+        """Create an elegant testimonial or quotation card with author details."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        # Card container
+        card = slide.Shapes.AddShape(5, left, top, width, height)  # rounded rectangle
+        card.Fill.Solid()
+        card.Fill.ForeColor.RGB = hex_to_rgb_int(bg_color_hex)
+        card.Line.Visible = -1
+        card.Line.ForeColor.RGB = hex_to_rgb_int(border_color_hex)
+        card.Line.Weight = 1.2
+
+        # Left vertical accent stripe
+        stripe = slide.Shapes.AddShape(1, left + 2, top + 6, 6, height - 12)
+        stripe.Fill.Solid()
+        stripe.Fill.ForeColor.RGB = hex_to_rgb_int(accent_color_hex)
+        stripe.Line.Visible = 0
+
+        # Big decorative quote mark
+        q_mark = slide.Shapes.AddTextbox(1, left + 24, top + 10, 60, 45)
+        q_mark.Fill.Background()
+        q_tr = q_mark.TextFrame.TextRange
+        q_tr.Text = "“"
+        q_tr.Font.Name = "Georgia"
+        q_tr.Font.Size = 48
+        q_tr.Font.Bold = 1
+        q_tr.Font.Color.RGB = hex_to_rgb_int(accent_color_hex)
+
+        # Quote body
+        body_box = slide.Shapes.AddTextbox(1, left + 40, top + 55, width - 80, height - 110)
+        body_box.Fill.Background()
+        b_tf = body_box.TextFrame
+        b_tf.WordWrap = -1
+        b_tr = b_tf.TextRange
+        b_tr.Text = f'"{quote}"'
+        b_tr.Font.Name = "Georgia"
+        b_tr.Font.Size = 18
+        b_tr.Font.Italic = 1
+        b_tr.Font.Color.RGB = hex_to_rgb_int(quote_color_hex)
+
+        # Author & Role on bottom right / left
+        auth_box = slide.Shapes.AddTextbox(1, left + 40, top + height - 50, width - 80, 40)
+        auth_box.Fill.Background()
+        a_tr = auth_box.TextFrame.TextRange
+        a_tr.Text = f"— {author}" + (f", {role}" if role else "")
+        a_tr.Font.Name = "Segoe UI"
+        a_tr.Font.Size = 13
+        a_tr.Font.Bold = 1
+        a_tr.Font.Color.RGB = hex_to_rgb_int("#475569")
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "author": author,
+            "card_id": card.Id,
+        }
+
+    def add_pros_cons(
+        self,
+        slide_index: int,
+        pros: List[str],
+        cons: List[str],
+        left: float = 80,
+        top: float = 140,
+        width: float = 800,
+        height: float = 330,
+    ) -> Dict[str, Any]:
+        """Create side-by-side comparison cards for Pros (green) and Cons (red)."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        gap = 24
+        col_w = (width - gap) / 2
+
+        # 1. Left Card: PROS (Green theme)
+        card_pros = slide.Shapes.AddShape(5, left, top, col_w, height)
+        card_pros.Fill.Solid()
+        card_pros.Fill.ForeColor.RGB = hex_to_rgb_int("#F0FDF4")  # light green
+        card_pros.Line.Visible = -1
+        card_pros.Line.ForeColor.RGB = hex_to_rgb_int("#86EFAC")
+
+        # Top green bar
+        bar_p = slide.Shapes.AddShape(1, left + 4, top + 2, col_w - 8, 4)
+        bar_p.Fill.Solid()
+        bar_p.Fill.ForeColor.RGB = hex_to_rgb_int("#16A34A")
+        bar_p.Line.Visible = 0
+
+        # Pros Title
+        t_pros = slide.Shapes.AddTextbox(1, left + 18, top + 15, col_w - 36, 35)
+        t_pros.Fill.Background()
+        t_pros_tr = t_pros.TextFrame.TextRange
+        t_pros_tr.Text = "✅ AVANTAGES / FORCES"
+        t_pros_tr.Font.Name = "Segoe UI"
+        t_pros_tr.Font.Size = 16
+        t_pros_tr.Font.Bold = 1
+        t_pros_tr.Font.Color.RGB = hex_to_rgb_int("#15803D")
+
+        # Pros list
+        p_list = slide.Shapes.AddTextbox(1, left + 18, top + 55, col_w - 36, height - 70)
+        p_list.Fill.Background()
+        p_list_tf = p_list.TextFrame
+        p_list_tf.WordWrap = -1
+        p_list_tr = p_list_tf.TextRange
+        p_list_tr.Text = "\n".join([f"•  {item}" for item in pros])
+        p_list_tr.Font.Name = "Segoe UI"
+        p_list_tr.Font.Size = 14
+        p_list_tr.Font.Color.RGB = hex_to_rgb_int("#14532D")
+        for i in range(1, p_list_tr.Paragraphs().Count + 1):
+            p_list_tr.Paragraphs(i).ParagraphFormat.SpaceBefore = 6
+
+        # 2. Right Card: CONS (Red/Rose theme)
+        rx = left + col_w + gap
+        card_cons = slide.Shapes.AddShape(5, rx, top, col_w, height)
+        card_cons.Fill.Solid()
+        card_cons.Fill.ForeColor.RGB = hex_to_rgb_int("#FEF2F2")  # light red
+        card_cons.Line.Visible = -1
+        card_cons.Line.ForeColor.RGB = hex_to_rgb_int("#FCA5A5")
+
+        # Top red bar
+        bar_c = slide.Shapes.AddShape(1, rx + 4, top + 2, col_w - 8, 4)
+        bar_c.Fill.Solid()
+        bar_c.Fill.ForeColor.RGB = hex_to_rgb_int("#DC2626")
+        bar_c.Line.Visible = 0
+
+        # Cons Title
+        t_cons = slide.Shapes.AddTextbox(1, rx + 18, top + 15, col_w - 36, 35)
+        t_cons.Fill.Background()
+        t_cons_tr = t_cons.TextFrame.TextRange
+        t_cons_tr.Text = "⚠️ INCONVÉNIENTS / RISQUES"
+        t_cons_tr.Font.Name = "Segoe UI"
+        t_cons_tr.Font.Size = 16
+        t_cons_tr.Font.Bold = 1
+        t_cons_tr.Font.Color.RGB = hex_to_rgb_int("#B91C1C")
+
+        # Cons list
+        c_list = slide.Shapes.AddTextbox(1, rx + 18, top + 55, col_w - 36, height - 70)
+        c_list.Fill.Background()
+        c_list_tf = c_list.TextFrame
+        c_list_tf.WordWrap = -1
+        c_list_tr = c_list_tf.TextRange
+        c_list_tr.Text = "\n".join([f"•  {item}" for item in cons])
+        c_list_tr.Font.Name = "Segoe UI"
+        c_list_tr.Font.Size = 14
+        c_list_tr.Font.Color.RGB = hex_to_rgb_int("#7F1D1D")
+        for i in range(1, c_list_tr.Paragraphs().Count + 1):
+            c_list_tr.Paragraphs(i).ParagraphFormat.SpaceBefore = 6
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "pros_count": len(pros),
+            "cons_count": len(cons),
+        }
+
+    def add_pricing_table(
+        self,
+        slide_index: int,
+        tiers: List[Dict[str, Any]],
+        left: float = 80,
+        top: float = 130,
+        width: float = 800,
+        height: float = 360,
+    ) -> Dict[str, Any]:
+        """Create a multi-tier SaaS pricing comparison cards layout."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        num_tiers = len(tiers)
+        if num_tiers == 0:
+            return {"status": "error", "message": "tiers list is empty"}
+
+        gap = 20
+        col_w = (width - ((num_tiers - 1) * gap)) / num_tiers
+
+        for i, t in enumerate(tiers):
+            cx = left + i * (col_w + gap)
+            is_popular = t.get("highlighted", False)
+
+            # Container
+            bg_col = "#FFFFFF" if not is_popular else "#F8FAFC"
+            border_col = "#3B82F6" if is_popular else "#E2E8F0"
+            border_weight = 2.0 if is_popular else 1.0
+
+            card = slide.Shapes.AddShape(5, cx, top, col_w, height)
+            card.Fill.Solid()
+            card.Fill.ForeColor.RGB = hex_to_rgb_int(bg_col)
+            card.Line.Visible = -1
+            card.Line.ForeColor.RGB = hex_to_rgb_int(border_col)
+            card.Line.Weight = border_weight
+
+            # Optional POPULAR tag
+            if is_popular:
+                pop_badge = slide.Shapes.AddShape(5, cx + (col_w / 2) - 50, top - 12, 100, 24)
+                pop_badge.Fill.Solid()
+                pop_badge.Fill.ForeColor.RGB = hex_to_rgb_int("#2563EB")
+                pop_badge.Line.Visible = 0
+                b_tr = pop_badge.TextFrame.TextRange
+                b_tr.Text = "POPULAIRE"
+                b_tr.Font.Name = "Segoe UI"
+                b_tr.Font.Size = 10
+                b_tr.Font.Bold = 1
+                b_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+                b_tr.ParagraphFormat.Alignment = 2
+
+            # Plan Name
+            name_box = slide.Shapes.AddTextbox(1, cx + 14, top + 18, col_w - 28, 28)
+            name_box.Fill.Background()
+            n_tr = name_box.TextFrame.TextRange
+            n_tr.Text = t.get("name", "Plan").upper()
+            n_tr.Font.Name = "Segoe UI"
+            n_tr.Font.Size = 13
+            n_tr.Font.Bold = 1
+            n_tr.Font.Color.RGB = hex_to_rgb_int("#2563EB" if is_popular else "#64748B")
+
+            # Price
+            price_box = slide.Shapes.AddTextbox(1, cx + 14, top + 46, col_w - 28, 48)
+            price_box.Fill.Background()
+            p_tr = price_box.TextFrame.TextRange
+            p_tr.Text = t.get("price", "$0")
+            p_tr.Font.Name = "Segoe UI"
+            p_tr.Font.Size = 30
+            p_tr.Font.Bold = 1
+            p_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+            # Period
+            period_box = slide.Shapes.AddTextbox(1, cx + 14, top + 92, col_w - 28, 22)
+            period_box.Fill.Background()
+            prd_tr = period_box.TextFrame.TextRange
+            prd_tr.Text = t.get("period", "/ mois")
+            prd_tr.Font.Name = "Segoe UI"
+            prd_tr.Font.Size = 11
+            prd_tr.Font.Color.RGB = hex_to_rgb_int("#94A3B8")
+
+            # Divider
+            div = slide.Shapes.AddShape(1, cx + 14, top + 118, col_w - 28, 1)
+            div.Fill.Solid()
+            div.Fill.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+            div.Line.Visible = 0
+
+            # Features list
+            feat_box = slide.Shapes.AddTextbox(1, cx + 14, top + 128, col_w - 28, height - 145)
+            feat_box.Fill.Background()
+            f_tf = feat_box.TextFrame
+            f_tf.WordWrap = -1
+            f_tr = f_tf.TextRange
+            features = t.get("features", [])
+            f_tr.Text = "\n".join([f"✓ {f}" for f in features])
+            f_tr.Font.Name = "Segoe UI"
+            f_tr.Font.Size = 12
+            f_tr.Font.Color.RGB = hex_to_rgb_int("#334155")
+            for p_i in range(1, f_tr.Paragraphs().Count + 1):
+                f_tr.Paragraphs(p_i).ParagraphFormat.SpaceBefore = 5
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "tiers_count": num_tiers,
+        }
+
+    def add_donut_chart(
+        self,
+        slide_index: int,
+        percentage: float,
+        label: str,
+        left: float = 380,
+        top: float = 160,
+        size: float = 180,
+        track_color_hex: str = "#E2E8F0",
+        fill_color_hex: str = "#2563EB",
+        bg_color_hex: str = "#FFFFFF",
+    ) -> Dict[str, Any]:
+        """Create a circular percentage metric widget with central stat number."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        # Outer background track circle
+        outer = slide.Shapes.AddShape(9, left, top, size, size)  # circle
+        outer.Fill.Solid()
+        outer.Fill.ForeColor.RGB = hex_to_rgb_int(fill_color_hex)
+        outer.Line.Visible = 0
+
+        # Inner cutout circle (creating donut ring)
+        inner_size = size * 0.72
+        inner_offset = (size - inner_size) / 2
+        inner = slide.Shapes.AddShape(9, left + inner_offset, top + inner_offset, inner_size, inner_size)
+        inner.Fill.Solid()
+        inner.Fill.ForeColor.RGB = hex_to_rgb_int(bg_color_hex)
+        inner.Line.Visible = 0
+
+        # Center percentage text
+        pct_box = slide.Shapes.AddTextbox(1, left + inner_offset, top + inner_offset + (inner_size * 0.2), inner_size, 45)
+        pct_box.Fill.Background()
+        pct_tr = pct_box.TextFrame.TextRange
+        pct_tr.Text = f"{int(percentage)}%"
+        pct_tr.Font.Name = "Segoe UI"
+        pct_tr.Font.Size = 28
+        pct_tr.Font.Bold = 1
+        pct_tr.Font.Color.RGB = hex_to_rgb_int(fill_color_hex)
+        pct_tr.ParagraphFormat.Alignment = 2  # Center
+
+        # Label underneath donut
+        lbl_box = slide.Shapes.AddTextbox(1, left - 20, top + size + 12, size + 40, 40)
+        lbl_box.Fill.Background()
+        lbl_tr = lbl_box.TextFrame.TextRange
+        lbl_tr.Text = label
+        lbl_tr.Font.Name = "Segoe UI"
+        lbl_tr.Font.Size = 14
+        lbl_tr.Font.Bold = 1
+        lbl_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+        lbl_tr.ParagraphFormat.Alignment = 2
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "percentage": percentage,
+            "label": label,
+        }
+
+    def delete_shape(self, slide_index: int, shape_id_or_name: Any) -> Dict[str, Any]:
+        """Delete a specific shape by its ID or name from a slide."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+
+        found = False
+        target_name = ""
+        for s in slide.Shapes:
+            if str(s.Id) == str(shape_id_or_name) or s.Name.lower() == str(shape_id_or_name).lower():
+                target_name = s.Name
+                s.Delete()
+                found = True
+                break
+
+        if not found:
+            raise ValueError(f"Shape '{shape_id_or_name}' not found on slide {slide_index}")
+
+        return {
+            "status": "success",
+            "message": f"Deleted shape '{target_name}' from slide {slide_index}",
+            "remaining_shapes": slide.Shapes.Count,
+        }
+
+    def clear_slide(self, slide_index: int) -> Dict[str, Any]:
+        """Remove all shapes from a slide to reset it to blank."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        count = slide.Shapes.Count
+
+        for i in range(count, 0, -1):
+            slide.Shapes(i).Delete()
+
+        return {
+            "status": "success",
+            "message": f"Cleared {count} shapes from slide {slide_index}",
+            "slide_index": slide_index,
+        }
+
+    def add_footer(
+        self,
+        slide_index: Optional[int] = None,
+        text: str = "Confidential & Proprietary",
+        show_slide_number: bool = True,
+    ) -> Dict[str, Any]:
+        """Add a sleek professional footer with notice and slide number."""
+        pres = self.get_presentation()
+        target_slides = [pres.Slides(slide_index)] if slide_index else [pres.Slides(i) for i in range(1, pres.Slides.Count + 1)]
+
+        for s in target_slides:
+            w = pres.PageSetup.SlideWidth
+            h = pres.PageSetup.SlideHeight
+
+            # Thin divider line
+            line = s.Shapes.AddShape(1, 40, h - 35, w - 80, 1)
+            line.Fill.Solid()
+            line.Fill.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+            line.Line.Visible = 0
+
+            # Footer text left
+            box_l = s.Shapes.AddTextbox(1, 40, h - 30, w - 160, 22)
+            box_l.Fill.Background()
+            tl = box_l.TextFrame.TextRange
+            tl.Text = text
+            tl.Font.Name = "Segoe UI"
+            tl.Font.Size = 10
+            tl.Font.Color.RGB = hex_to_rgb_int("#94A3B8")
+
+            # Slide number right
+            if show_slide_number:
+                box_r = s.Shapes.AddTextbox(1, w - 100, h - 30, 60, 22)
+                box_r.Fill.Background()
+                tr = box_r.TextFrame.TextRange
+                tr.Text = f"Slide {s.SlideIndex}"
+                tr.Font.Name = "Segoe UI"
+                tr.Font.Size = 10
+                tr.Font.Color.RGB = hex_to_rgb_int("#94A3B8")
+                tr.ParagraphFormat.Alignment = 3  # Right
+
+        return {
+            "status": "success",
+            "scope": f"slide {slide_index}" if slide_index else "all slides",
+        }
+
 
 # Global singleton controller instance
 controller = PowerPointController()
+
 

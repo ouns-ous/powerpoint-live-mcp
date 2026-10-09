@@ -690,10 +690,216 @@ def ppt_add_badge(
     )
 
 
+@mcp.tool()
+def ppt_search_and_replace_text(
+    find_text: str,
+    replace_text: str,
+    slide_index: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Find and replace text across all slides or within a specific slide (templates/variables).
+    Args:
+        find_text: Text string to search for (case-insensitive search).
+        replace_text: Replacement text string.
+        slide_index: Optional 1-indexed slide number. If omitted, replaces across all slides.
+    """
+    return controller.search_and_replace_text(
+        find_text=find_text,
+        replace_text=replace_text,
+        slide_index=slide_index,
+    )
+
+
+@mcp.tool()
+def ppt_add_quote_card(
+    slide_index: int,
+    quote: str,
+    author: str,
+    role: str = "",
+    left: float = 80,
+    top: float = 140,
+    width: float = 800,
+    height: float = 240,
+    bg_color_hex: str = "#FFFFFF",
+    border_color_hex: str = "#E2E8F0",
+    quote_color_hex: str = "#0F172A",
+    accent_color_hex: str = "#3B82F6",
+) -> Dict[str, Any]:
+    """Create a testimonial or quotation card with decorative quote mark and author details.
+    Args:
+        slide_index: 1-indexed slide number.
+        quote: Quotation text.
+        author: Author name (e.g. 'Steve Jobs', 'Satya Nadella').
+        role: Author title or company (e.g. 'CEO, Microsoft').
+        left: X position in points.
+        top: Y position in points.
+        width: Card width in points.
+        height: Card height in points.
+        bg_color_hex: Background card color.
+        border_color_hex: Border color.
+        quote_color_hex: Quote text font color.
+        accent_color_hex: Stripe and quote icon color.
+    """
+    return controller.add_quote_card(
+        slide_index=slide_index,
+        quote=quote,
+        author=author,
+        role=role,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        bg_color_hex=bg_color_hex,
+        border_color_hex=border_color_hex,
+        quote_color_hex=quote_color_hex,
+        accent_color_hex=accent_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_pros_cons(
+    slide_index: int,
+    pros: List[str],
+    cons: List[str],
+    left: float = 80,
+    top: float = 140,
+    width: float = 800,
+    height: float = 330,
+) -> Dict[str, Any]:
+    """Create side-by-side comparison cards for Pros (green) and Cons (red).
+    Args:
+        slide_index: 1-indexed slide number.
+        pros: List of positive points / strengths.
+        cons: List of negative points / risks.
+        left: X position in points.
+        top: Y position in points.
+        width: Total width of both columns.
+        height: Height of the comparison cards.
+    """
+    return controller.add_pros_cons(
+        slide_index=slide_index,
+        pros=pros,
+        cons=cons,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_pricing_table(
+    slide_index: int,
+    tiers: List[Dict[str, Any]],
+    left: float = 80,
+    top: float = 130,
+    width: float = 800,
+    height: float = 360,
+) -> Dict[str, Any]:
+    """Create a SaaS pricing comparison cards layout (e.g. Free, Pro, Enterprise).
+    Args:
+        slide_index: 1-indexed slide number.
+        tiers: List of tier dicts: [{'name': 'Pro', 'price': '$29', 'period': '/mo', 'highlighted': True, 'features': ['10 Projects', 'API Access']}]
+        left: X position in points.
+        top: Y position in points.
+        width: Total width of the table.
+        height: Total height of the cards.
+    """
+    return controller.add_pricing_table(
+        slide_index=slide_index,
+        tiers=tiers,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_donut_chart(
+    slide_index: int,
+    percentage: float,
+    label: str,
+    left: float = 380,
+    top: float = 160,
+    size: float = 180,
+    track_color_hex: str = "#E2E8F0",
+    fill_color_hex: str = "#2563EB",
+    bg_color_hex: str = "#FFFFFF",
+) -> Dict[str, Any]:
+    """Create a circular percentage progress metric widget (donut).
+    Args:
+        slide_index: 1-indexed slide number.
+        percentage: Number between 0 and 100.
+        label: Label text underneath the chart.
+        left: X position in points.
+        top: Y position in points.
+        size: Diameter in points (default 180).
+        track_color_hex: Inactive track ring color.
+        fill_color_hex: Active fill ring color.
+        bg_color_hex: Inner cutout color (should match slide background).
+    """
+    return controller.add_donut_chart(
+        slide_index=slide_index,
+        percentage=percentage,
+        label=label,
+        left=left,
+        top=top,
+        size=size,
+        track_color_hex=track_color_hex,
+        fill_color_hex=fill_color_hex,
+        bg_color_hex=bg_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_delete_shape(
+    slide_index: int,
+    shape_id_or_name: Any,
+) -> Dict[str, Any]:
+    """Delete a specific shape by its ID or name from a slide.
+    Args:
+        slide_index: 1-indexed slide number.
+        shape_id_or_name: ID integer/string or shape name.
+    """
+    return controller.delete_shape(
+        slide_index=slide_index,
+        shape_id_or_name=shape_id_or_name,
+    )
+
+
+@mcp.tool()
+def ppt_clear_slide(slide_index: int) -> Dict[str, Any]:
+    """Remove all shapes from a slide to reset it to completely blank.
+    Args:
+        slide_index: 1-indexed slide number.
+    """
+    return controller.clear_slide(slide_index=slide_index)
+
+
+@mcp.tool()
+def ppt_add_footer(
+    slide_index: Optional[int] = None,
+    text: str = "Confidential & Proprietary",
+    show_slide_number: bool = True,
+) -> Dict[str, Any]:
+    """Add a professional bottom footer bar with notice and slide number.
+    Args:
+        slide_index: Optional 1-indexed slide number. If omitted, adds footer to ALL slides.
+        text: Footer notice text (default 'Confidential & Proprietary').
+        show_slide_number: Whether to display 'Slide X' on the bottom right (default True).
+    """
+    return controller.add_footer(
+        slide_index=slide_index,
+        text=text,
+        show_slide_number=show_slide_number,
+    )
+
+
 def main():
     mcp.run()
 
 
 if __name__ == "__main__":
     main()
+
 

@@ -101,6 +101,14 @@ Or using direct Python executable:
 | `ppt_duplicate_slide` | Duplicate an existing slide |
 | `ppt_move_slide` | Reorder / move slides |
 | `ppt_read_slide_content` | Inspect and read all text, tables, and shapes from slide |
+| `ppt_search_and_replace_text` | Find and replace text or template variables (`{{VAR}}`) across slides |
+| `ppt_add_quote_card` | Add testimonial/quote card with quote mark and author details |
+| `ppt_add_pros_cons` | Add 2-column side-by-side Pros (green) vs Cons (red) cards |
+| `ppt_add_pricing_table` | Add multi-tier SaaS pricing comparison cards with popular badge |
+| `ppt_add_donut_chart` | Add circular percentage progress metric widget (donut) |
+| `ppt_delete_shape` | Delete a specific shape by ID or name |
+| `ppt_clear_slide` | Clear all shapes from a slide to reset to blank |
+| `ppt_add_footer` | Add professional footer bar with confidentiality and slide number |
 | `ppt_run_slideshow` | Launch full-screen presentation mode |
 | `ppt_slideshow_next` | Advance slideshow to next step/slide |
 | `ppt_slideshow_previous` | Go back to previous slideshow slide |
