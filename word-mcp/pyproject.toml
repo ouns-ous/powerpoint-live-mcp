@@ -1,0 +1,18 @@
+[project]
+name = "word-mcp"
+version = "1.0.0"
+description = "Comprehensive Microsoft Word Live Automation & OOXML MCP Server for Windows"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp<2",
+    "pywin32>=306",
+    "pydantic>=2.0.0",
+    "python-docx>=1.1.0",
+    "pillow>=10.0.0",
+    "lxml>=5.0.0",
+    "mistune>=3.0.0",
+]
+
+[project.scripts]
+word-mcp = "server:main"

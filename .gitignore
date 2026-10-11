@@ -15,9 +15,17 @@ __pycache__/
 dist/
 build/
 
-# Microsoft PowerPoint temp lock files
+# Microsoft Office temp lock files
 ~$*.pptx
 ~$*.ppt
+~$*.docx
+~$*.doc
+
+# Generated demo artifacts
+demo_*.docx
+demo_*.pdf
+demo_*.md
+word_screenshot_*.png
 
 # Operating System files
 Thumbs.db
