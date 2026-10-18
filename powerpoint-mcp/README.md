@@ -112,6 +112,14 @@
 | `ppt_animate_exit` | حركات خروج وتلاشي (Exit Animations: Fade Out, Disappear, Fly Out) لإخفاء العناصر السابقة |
 | `ppt_clear_animations` | مسح وتنظيف كل الحركات والمؤثرات من الشريحة لإعادة ضبطها |
 | `ppt_add_animated_stepper` | رسم مسار خطوات تفاعلي (Animated Stepper Pipeline) مجهز بحركات دخول متزامنة تلقائياً |
+| `ppt_add_venn_diagram` | رسم مخطط فين (Venn Diagram) بدائرتين متداخلتين شفافتين مع شارة التآزر الاستراتيجي (Synergy Badge) |
+| `ppt_add_pyramid_hierarchy` | رسم هرم استراتيجي وتسلسل هرمي متعدد المستويات (Strategy / Maslow Pyramid Stack) |
+| `ppt_add_matrix_2x2` | مصفوفة الأولويات الرباعية 2x2 (Gartner Magic Quadrant / Impact-Effort Matrix) مع محاور X و Y |
+| `ppt_add_roadmap_milestones` | مسار خارطة طريق ربع سنوية (Quarterly Roadmap & Milestones) بنقاط مسار وبطاقات مخرجات |
+| `ppt_add_user_persona` | بطاقة شخصية العميل والمستخدم (User Persona Card) بالأفاتار، الأهداف، نقاط الألم، وحزمة الأدوات |
+| `ppt_add_roi_card` | بطاقة دراسة الجدوى والعائد على الاستثمار وحساب الوفر المالي (Executive ROI & Cost Savings Case) |
+| `ppt_add_dashboard_strip` | شريط لوحة قيادة موحد متعدد المؤشرات الرقمية (KPI Dashboard Strip) وشارات النمو الإيجابي والسلبي |
+| `ppt_batch_format_deck` | توحيد وتنسيق الخطوط وألوان العناوين وتذييل الصفحات دفعة واحدة على جميع شرائح العرض بنقرة واحدة |
 | `ppt_delete_shape` | حذف شكل معين من الشريحة عبر الاسم أو المعرف (ID) |
 | `ppt_clear_slide` | مسح وتنظيف كل الأشكال من الشريحة لإعادة تعيينها |
 | `ppt_add_footer` | إضافة تذييل احترافي (Footer) مع رقم الشريحة وعبارة السرية على كل الشرائح |

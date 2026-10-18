@@ -1604,6 +1604,311 @@ def ppt_add_animated_stepper(
     )
 
 
+@mcp.tool()
+def ppt_add_venn_diagram(
+    slide_index: int,
+    title_1: str = "Category A",
+    title_2: str = "Category B",
+    overlap_title: str = "Strategic Synergy",
+    desc_1: str = "",
+    desc_2: str = "",
+    overlap_desc: str = "",
+    color_1_hex: str = "#3B82F6",
+    color_2_hex: str = "#10B981",
+    left: float = 160,
+    top: float = 130,
+    circle_size: float = 320,
+) -> Dict[str, Any]:
+    """Create an overlapping 2-circle Venn Diagram with translucent intersection.
+    Args:
+        slide_index: 1-indexed slide number.
+        title_1: Title of circle 1 (left).
+        title_2: Title of circle 2 (right).
+        overlap_title: Title of intersection badge.
+        desc_1: Description for circle 1.
+        desc_2: Description for circle 2.
+        overlap_desc: Description for intersection.
+        color_1_hex: Hex color for circle 1.
+        color_2_hex: Hex color for circle 2.
+        left: X position in points.
+        top: Y position in points.
+        circle_size: Diameter of circles.
+    """
+    return controller.add_venn_diagram(
+        slide_index=slide_index,
+        title_1=title_1,
+        title_2=title_2,
+        overlap_title=overlap_title,
+        desc_1=desc_1,
+        desc_2=desc_2,
+        overlap_desc=overlap_desc,
+        color_1_hex=color_1_hex,
+        color_2_hex=color_2_hex,
+        left=left,
+        top=top,
+        circle_size=circle_size,
+    )
+
+
+@mcp.tool()
+def ppt_add_pyramid_hierarchy(
+    slide_index: int,
+    levels: List[Dict[str, str]],
+    left: float = 120,
+    top: float = 120,
+    width: float = 720,
+    height: float = 360,
+) -> Dict[str, Any]:
+    """Create a tiered strategy or hierarchy pyramid stack.
+    Args:
+        slide_index: 1-indexed slide number.
+        levels: List of dicts: [{'title': 'Self-Actualization', 'desc': 'Peak potential'}] from top to bottom.
+        left: X position in points.
+        top: Y position in points.
+        width: Maximum pyramid base width.
+        height: Total pyramid stack height.
+    """
+    return controller.add_pyramid_hierarchy(
+        slide_index=slide_index,
+        levels=levels,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_matrix_2x2(
+    slide_index: int,
+    x_label_low: str = "Low Effort",
+    x_label_high: str = "High Effort",
+    y_label_low: str = "Low Impact",
+    y_label_high: str = "High Impact",
+    top_left_title: str = "Quick Wins",
+    top_left_items: Optional[List[str]] = None,
+    top_right_title: str = "Major Projects",
+    top_right_items: Optional[List[str]] = None,
+    bottom_left_title: str = "Fill-Ins",
+    bottom_left_items: Optional[List[str]] = None,
+    bottom_right_title: str = "Thankless Tasks",
+    bottom_right_items: Optional[List[str]] = None,
+    left: float = 100,
+    top: float = 120,
+    width: float = 760,
+    height: float = 360,
+) -> Dict[str, Any]:
+    """Create a 2x2 prioritization or Magic Quadrant matrix with labeled axes.
+    Args:
+        slide_index: 1-indexed slide number.
+        x_label_low: Label for left side of X axis.
+        x_label_high: Label for right side of X axis.
+        y_label_low: Label for bottom side of Y axis.
+        y_label_high: Label for top side of Y axis.
+        top_left_title: Title of top-left quadrant (High Impact, Low Effort).
+        top_left_items: Bullets for top-left quadrant.
+        top_right_title: Title of top-right quadrant (High Impact, High Effort).
+        top_right_items: Bullets for top-right quadrant.
+        bottom_left_title: Title of bottom-left quadrant (Low Impact, Low Effort).
+        bottom_left_items: Bullets for bottom-left quadrant.
+        bottom_right_title: Title of bottom-right quadrant (Low Impact, High Effort).
+        bottom_right_items: Bullets for bottom-right quadrant.
+        left: X position in points.
+        top: Y position in points.
+        width: Matrix width.
+        height: Matrix height.
+    """
+    return controller.add_matrix_2x2(
+        slide_index=slide_index,
+        x_label_low=x_label_low,
+        x_label_high=x_label_high,
+        y_label_low=y_label_low,
+        y_label_high=y_label_high,
+        top_left_title=top_left_title,
+        top_left_items=top_left_items,
+        top_right_title=top_right_title,
+        top_right_items=top_right_items,
+        bottom_left_title=bottom_left_title,
+        bottom_left_items=bottom_left_items,
+        bottom_right_title=bottom_right_title,
+        bottom_right_items=bottom_right_items,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_roadmap_milestones(
+    slide_index: int,
+    phases: List[Dict[str, Any]],
+    left: float = 80,
+    top: float = 140,
+    width: float = 800,
+    height: float = 300,
+    accent_color_hex: str = "#2563EB",
+) -> Dict[str, Any]:
+    """Create a quarterly or phased product roadmap timeline with milestone cards.
+    Args:
+        slide_index: 1-indexed slide number.
+        phases: List of phases: [{'period': 'Q1 2026', 'title': 'Core Architecture', 'deliverables': ['MCP Engine', 'COM Bridge'], 'status': 'completed'}]
+        left: X position in points.
+        top: Y position in points.
+        width: Roadmap width.
+        height: Roadmap height.
+        accent_color_hex: Primary accent color.
+    """
+    return controller.add_roadmap_milestones(
+        slide_index=slide_index,
+        phases=phases,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        accent_color_hex=accent_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_user_persona(
+    slide_index: int,
+    name: str = "Sarah Jenkins",
+    role: str = "Enterprise Solution Architect",
+    company: str = "Tier-1 Cloud Provider",
+    quote: str = "We need autonomous AI tools that fit seamlessly into existing desktop workflows.",
+    goals: Optional[List[str]] = None,
+    pain_points: Optional[List[str]] = None,
+    tech_stack: Optional[List[str]] = None,
+    left: float = 80,
+    top: float = 130,
+    width: float = 800,
+    height: float = 340,
+    accent_color_hex: str = "#2563EB",
+) -> Dict[str, Any]:
+    """Create an executive User Persona card with goals, pain points, and tech stack.
+    Args:
+        slide_index: 1-indexed slide number.
+        name: Persona name.
+        role: Job title / role.
+        company: Organization or industry.
+        quote: Persona guiding quote.
+        goals: List of goals and motivations.
+        pain_points: List of frictions and pain points.
+        tech_stack: List of tools / technologies used.
+        left: X position in points.
+        top: Y position in points.
+        width: Card width.
+        height: Card height.
+        accent_color_hex: Primary theme color.
+    """
+    return controller.add_user_persona(
+        slide_index=slide_index,
+        name=name,
+        role=role,
+        company=company,
+        quote=quote,
+        goals=goals,
+        pain_points=pain_points,
+        tech_stack=tech_stack,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        accent_color_hex=accent_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_roi_card(
+    slide_index: int,
+    before_cost: str = "$240,000 / yr",
+    after_cost: str = "$36,000 / yr",
+    savings_amount: str = "$204,000",
+    savings_percentage: str = "85% Cost Reduction",
+    payback_period: str = "1.8 Months",
+    metrics_summary: str = "5,400 engineering hours saved annually",
+    left: float = 80,
+    top: float = 140,
+    width: float = 800,
+    height: float = 280,
+) -> Dict[str, Any]:
+    """Create an executive ROI & Cost Savings calculation business case card.
+    Args:
+        slide_index: 1-indexed slide number.
+        before_cost: Baseline legacy cost.
+        after_cost: Modern automated cost.
+        savings_amount: Net dollar savings.
+        savings_percentage: Percentage savings badge.
+        payback_period: Estimated time to positive ROI.
+        metrics_summary: Concrete business impact metric.
+        left: X position in points.
+        top: Y position in points.
+        width: Card width.
+        height: Card height.
+    """
+    return controller.add_roi_card(
+        slide_index=slide_index,
+        before_cost=before_cost,
+        after_cost=after_cost,
+        savings_amount=savings_amount,
+        savings_percentage=savings_percentage,
+        payback_period=payback_period,
+        metrics_summary=metrics_summary,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_dashboard_strip(
+    slide_index: int,
+    kpis: List[Dict[str, Any]],
+    left: float = 80,
+    top: float = 140,
+    width: float = 800,
+    height: float = 130,
+) -> Dict[str, Any]:
+    """Create a unified multi-metric executive dashboard strip.
+    Args:
+        slide_index: 1-indexed slide number.
+        kpis: List of KPI dicts: [{'value': '99.98%', 'label': 'SLA Uptime', 'change': '+0.4%', 'positive': True}]
+        left: X position in points.
+        top: Y position in points.
+        width: Strip width.
+        height: Strip height.
+    """
+    return controller.add_dashboard_strip(
+        slide_index=slide_index,
+        kpis=kpis,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_batch_format_deck(
+    font_name: str = "Segoe UI",
+    title_color_hex: Optional[str] = None,
+    footer_text: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Apply uniform corporate typography, styling, and optional footer across all slides in deck.
+    Args:
+        font_name: Unified font family across all slides.
+        title_color_hex: Optional hex color for top-level headers.
+        footer_text: Optional footer text to append to all slides with slide numbers.
+    """
+    return controller.batch_format_deck(
+        font_name=font_name,
+        title_color_hex=title_color_hex,
+        footer_text=footer_text,
+    )
+
+
 def main():
     mcp.run()
 

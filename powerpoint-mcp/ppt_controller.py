@@ -3438,6 +3438,714 @@ class PowerPointController:
             "animated": animate,
         }
 
+    def add_venn_diagram(
+        self,
+        slide_index: int,
+        title_1: str = "Category A",
+        title_2: str = "Category B",
+        overlap_title: str = "Strategic Synergy",
+        desc_1: str = "",
+        desc_2: str = "",
+        overlap_desc: str = "",
+        color_1_hex: str = "#3B82F6",
+        color_2_hex: str = "#10B981",
+        left: float = 160,
+        top: float = 130,
+        circle_size: float = 320,
+    ) -> Dict[str, Any]:
+        """Create an overlapping 2-circle Venn Diagram with translucent intersection."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        # Circle 1 (Left)
+        c1 = slide.Shapes.AddShape(9, left, top, circle_size, circle_size)
+        c1.Fill.Solid()
+        c1.Fill.ForeColor.RGB = hex_to_rgb_int(color_1_hex)
+        c1.Fill.Transparency = 0.45
+        c1.Line.Visible = -1
+        c1.Line.ForeColor.RGB = hex_to_rgb_int(color_1_hex)
+        c1.Line.Weight = 2.0
+
+        # Circle 2 (Right)
+        c2_left = left + (circle_size * 0.65)
+        c2 = slide.Shapes.AddShape(9, c2_left, top, circle_size, circle_size)
+        c2.Fill.Solid()
+        c2.Fill.ForeColor.RGB = hex_to_rgb_int(color_2_hex)
+        c2.Fill.Transparency = 0.45
+        c2.Line.Visible = -1
+        c2.Line.ForeColor.RGB = hex_to_rgb_int(color_2_hex)
+        c2.Line.Weight = 2.0
+
+        # Label Left
+        t1_box = slide.Shapes.AddTextbox(1, left + 20, top + (circle_size * 0.35), circle_size * 0.5, 90)
+        t1_box.Fill.Background()
+        t1_tf = t1_box.TextFrame
+        t1_tf.WordWrap = -1
+        t1_tr = t1_tf.TextRange
+        t1_tr.Text = f"{title_1}\n{desc_1}" if desc_1 else title_1
+        p1 = t1_tr.Paragraphs(1)
+        p1.Font.Name = "Segoe UI"
+        p1.Font.Size = 15
+        p1.Font.Bold = 1
+        p1.Font.Color.RGB = hex_to_rgb_int("#1E3A8A")
+        p1.ParagraphFormat.Alignment = 2
+
+        # Label Right
+        t2_box = slide.Shapes.AddTextbox(1, c2_left + (circle_size * 0.45), top + (circle_size * 0.35), circle_size * 0.5, 90)
+        t2_box.Fill.Background()
+        t2_tf = t2_box.TextFrame
+        t2_tf.WordWrap = -1
+        t2_tr = t2_tf.TextRange
+        t2_tr.Text = f"{title_2}\n{desc_2}" if desc_2 else title_2
+        p2 = t2_tr.Paragraphs(1)
+        p2.Font.Name = "Segoe UI"
+        p2.Font.Size = 15
+        p2.Font.Bold = 1
+        p2.Font.Color.RGB = hex_to_rgb_int("#064E3B")
+        p2.ParagraphFormat.Alignment = 2
+
+        # Intersection Overlap Box (Center)
+        int_w = 160
+        int_x = left + (circle_size * 0.65) - (int_w / 2) + (circle_size * 0.17)
+        int_y = top + (circle_size * 0.35)
+        int_pill = slide.Shapes.AddShape(5, int_x, int_y, int_w, 65)
+        int_pill.Fill.Solid()
+        int_pill.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+        int_pill.Line.Visible = -1
+        int_pill.Line.ForeColor.RGB = hex_to_rgb_int("#2563EB")
+        int_pill.Line.Weight = 1.5
+
+        iptr = int_pill.TextFrame.TextRange
+        iptr.Text = f"{overlap_title}\n{overlap_desc}" if overlap_desc else overlap_title
+        ip1 = iptr.Paragraphs(1)
+        ip1.Font.Name = "Segoe UI"
+        ip1.Font.Size = 12
+        ip1.Font.Bold = 1
+        ip1.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+        ip1.ParagraphFormat.Alignment = 2
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "title_1": title_1,
+            "title_2": title_2,
+            "overlap_title": overlap_title,
+        }
+
+    def add_pyramid_hierarchy(
+        self,
+        slide_index: int,
+        levels: List[Dict[str, str]],
+        left: float = 120,
+        top: float = 120,
+        width: float = 720,
+        height: float = 360,
+    ) -> Dict[str, Any]:
+        """Create a tiered strategy or hierarchy pyramid stack."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        num_levels = len(levels)
+        if num_levels == 0:
+            return {"status": "error", "message": "levels list is empty"}
+
+        gap = 10
+        level_h = (height - (gap * (num_levels - 1))) / num_levels
+
+        palette = ["#3B82F6", "#2563EB", "#1D4ED8", "#1E40AF", "#1E3A8A"]
+
+        for i, lvl in enumerate(levels):
+            ratio = 0.42 + (0.58 * i / max(1, num_levels - 1))
+            lw = width * ratio
+            lx = left + (width - lw) / 2
+            ly = top + (i * (level_h + gap))
+
+            color = palette[min(i, len(palette) - 1)]
+
+            card = slide.Shapes.AddShape(5, lx, ly, lw, level_h)
+            card.Fill.Solid()
+            card.Fill.ForeColor.RGB = hex_to_rgb_int(color)
+            card.Line.Visible = 0
+
+            # Level number badge
+            badge_size = 28
+            badge = slide.Shapes.AddShape(9, lx + 16, ly + (level_h - badge_size) / 2, badge_size, badge_size)
+            badge.Fill.Solid()
+            badge.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+            badge.Line.Visible = 0
+            b_tr = badge.TextFrame.TextRange
+            b_tr.Text = f"{i + 1}"
+            b_tr.Font.Name = "Segoe UI"
+            b_tr.Font.Size = 11
+            b_tr.Font.Bold = 1
+            b_tr.Font.Color.RGB = hex_to_rgb_int(color)
+            b_tr.ParagraphFormat.Alignment = 2
+
+            # Text
+            title = str(lvl.get("title", f"Level {i + 1}"))
+            desc = str(lvl.get("desc", lvl.get("description", "")))
+
+            t_box = slide.Shapes.AddTextbox(1, lx + 54, ly + 8, lw - 70, level_h - 16)
+            t_box.Fill.Background()
+            t_tf = t_box.TextFrame
+            t_tf.WordWrap = -1
+            t_tr = t_tf.TextRange
+            if desc:
+                t_tr.Text = f"{title} - {desc}"
+            else:
+                t_tr.Text = title
+            t_tr.Font.Name = "Segoe UI"
+            t_tr.Font.Size = 13
+            t_tr.Font.Bold = 1
+            t_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+            t_tr.ParagraphFormat.Alignment = 1
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "levels_count": num_levels,
+        }
+
+    def add_matrix_2x2(
+        self,
+        slide_index: int,
+        x_label_low: str = "Low Effort",
+        x_label_high: str = "High Effort",
+        y_label_low: str = "Low Impact",
+        y_label_high: str = "High Impact",
+        top_left_title: str = "Quick Wins",
+        top_left_items: Optional[List[str]] = None,
+        top_right_title: str = "Major Projects",
+        top_right_items: Optional[List[str]] = None,
+        bottom_left_title: str = "Fill-Ins",
+        bottom_left_items: Optional[List[str]] = None,
+        bottom_right_title: str = "Thankless Tasks",
+        bottom_right_items: Optional[List[str]] = None,
+        left: float = 100,
+        top: float = 120,
+        width: float = 760,
+        height: float = 360,
+    ) -> Dict[str, Any]:
+        """Create a 2x2 prioritization or Magic Quadrant matrix with labeled axes."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        gap = 16
+        qw = (width - gap) / 2
+        qh = (height - gap) / 2
+
+        quads = [
+            {"title": top_left_title, "items": top_left_items or ["Fast implementation", "Immediate value"], "color": "#10B981", "bg": "#F0FDF4", "border": "#BBF7D0", "c": 0, "r": 0},
+            {"title": top_right_title, "items": top_right_items or ["High strategic leverage", "Multi-quarter roadmap"], "color": "#3B82F6", "bg": "#EFF6FF", "border": "#BFDBFE", "c": 1, "r": 0},
+            {"title": bottom_left_title, "items": bottom_left_items or ["Low priority", "Do during downtime"], "color": "#F59E0B", "bg": "#FFFBEB", "border": "#FDE68A", "c": 0, "r": 1},
+            {"title": bottom_right_title, "items": bottom_right_items or ["High friction", "Re-evaluate or eliminate"], "color": "#EF4444", "bg": "#FEF2F2", "border": "#FECACA", "c": 1, "r": 1},
+        ]
+
+        for q in quads:
+            qx = left + (q["c"] * (qw + gap))
+            qy = top + (q["r"] * (qh + gap))
+
+            card = slide.Shapes.AddShape(5, qx, qy, qw, qh)
+            card.Fill.Solid()
+            card.Fill.ForeColor.RGB = hex_to_rgb_int(q["bg"])
+            card.Line.Visible = -1
+            card.Line.ForeColor.RGB = hex_to_rgb_int(q["border"])
+            card.Line.Weight = 1.0
+
+            # Title
+            t_box = slide.Shapes.AddTextbox(1, qx + 14, qy + 10, qw - 28, 26)
+            t_box.Fill.Background()
+            t_tr = t_box.TextFrame.TextRange
+            t_tr.Text = q["title"]
+            t_tr.Font.Name = "Segoe UI"
+            t_tr.Font.Size = 13
+            t_tr.Font.Bold = 1
+            t_tr.Font.Color.RGB = hex_to_rgb_int(q["color"])
+
+            # Items
+            text = "\n".join([f"- {it}" for it in q["items"]])
+            i_box = slide.Shapes.AddTextbox(1, qx + 14, qy + 36, qw - 28, qh - 44)
+            i_box.Fill.Background()
+            i_tf = i_box.TextFrame
+            i_tf.WordWrap = -1
+            i_tr = i_tf.TextRange
+            i_tr.Text = text
+            i_tr.Font.Name = "Segoe UI"
+            i_tr.Font.Size = 11
+            i_tr.Font.Color.RGB = hex_to_rgb_int("#334155")
+
+        # X-Axis labels underneath
+        ax_box = slide.Shapes.AddTextbox(1, left, top + height + 6, width, 22)
+        ax_box.Fill.Background()
+        ax_tr = ax_box.TextFrame.TextRange
+        ax_tr.Text = f"<< {x_label_low}                          EFFORT / COMPLEXITY                          {x_label_high} >>"
+        ax_tr.Font.Name = "Segoe UI"
+        ax_tr.Font.Size = 10
+        ax_tr.Font.Bold = 1
+        ax_tr.Font.Color.RGB = hex_to_rgb_int("#64748B")
+        ax_tr.ParagraphFormat.Alignment = 2
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "matrix": "2x2 Prioritization",
+        }
+
+    def add_roadmap_milestones(
+        self,
+        slide_index: int,
+        phases: List[Dict[str, Any]],
+        left: float = 80,
+        top: float = 140,
+        width: float = 800,
+        height: float = 300,
+        accent_color_hex: str = "#2563EB",
+    ) -> Dict[str, Any]:
+        """Create a quarterly or phased product roadmap timeline with milestone cards."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        num_phases = len(phases)
+        if num_phases == 0:
+            return {"status": "error", "message": "phases list is empty"}
+
+        gap = 16
+        col_w = (width - (gap * (num_phases - 1))) / num_phases
+
+        track_y = top + 35
+        track = slide.Shapes.AddShape(1, left, track_y, width, 3)
+        track.Fill.Solid()
+        track.Fill.ForeColor.RGB = hex_to_rgb_int("#CBD5E1")
+        track.Line.Visible = 0
+
+        for i, ph in enumerate(phases):
+            cx = left + (i * (col_w + gap))
+            period = str(ph.get("period", ph.get("quarter", f"Phase {i + 1}")))
+            title = str(ph.get("title", f"Milestone {i + 1}"))
+            deliverables = ph.get("deliverables", [])
+            status = str(ph.get("status", "planned")).lower()
+
+            status_color = "#10B981" if status == "completed" else ("#2563EB" if status == "in_progress" else "#94A3B8")
+
+            # Milestone Node circle on track
+            node_size = 20
+            node_x = cx + (col_w / 2) - (node_size / 2)
+            node = slide.Shapes.AddShape(9, node_x, track_y - (node_size / 2) + 1.5, node_size, node_size)
+            node.Fill.Solid()
+            node.Fill.ForeColor.RGB = hex_to_rgb_int(status_color)
+            node.Line.Visible = -1
+            node.Line.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+            node.Line.Weight = 2.0
+
+            # Period Pill above track
+            pill = slide.Shapes.AddShape(5, cx + (col_w / 2) - 45, top, 90, 22)
+            pill.Fill.Solid()
+            pill.Fill.ForeColor.RGB = hex_to_rgb_int(status_color)
+            pill.Line.Visible = 0
+            p_tr = pill.TextFrame.TextRange
+            p_tr.Text = period.upper()
+            p_tr.Font.Name = "Segoe UI"
+            p_tr.Font.Size = 9
+            p_tr.Font.Bold = 1
+            p_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+            p_tr.ParagraphFormat.Alignment = 2
+
+            # Milestone Details Card below track
+            card_y = top + 55
+            card_h = height - 60
+            card = slide.Shapes.AddShape(5, cx, card_y, col_w, card_h)
+            card.Fill.Solid()
+            card.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+            card.Line.Visible = -1
+            card.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+            card.Line.Weight = 1.0
+
+            # Title
+            t_box = slide.Shapes.AddTextbox(1, cx + 12, card_y + 12, col_w - 24, 26)
+            t_box.Fill.Background()
+            t_tr = t_box.TextFrame.TextRange
+            t_tr.Text = title
+            t_tr.Font.Name = "Segoe UI"
+            t_tr.Font.Size = 13
+            t_tr.Font.Bold = 1
+            t_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+            # Deliverables
+            if deliverables:
+                d_text = "\n".join([f"- {d}" for d in deliverables])
+                d_box = slide.Shapes.AddTextbox(1, cx + 12, card_y + 40, col_w - 24, card_h - 50)
+                d_box.Fill.Background()
+                d_tf = d_box.TextFrame
+                d_tf.WordWrap = -1
+                d_tr = d_tf.TextRange
+                d_tr.Text = d_text
+                d_tr.Font.Name = "Segoe UI"
+                d_tr.Font.Size = 11
+                d_tr.Font.Color.RGB = hex_to_rgb_int("#475569")
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "phases_count": num_phases,
+        }
+
+    def add_user_persona(
+        self,
+        slide_index: int,
+        name: str = "Sarah Jenkins",
+        role: str = "Enterprise Solution Architect",
+        company: str = "Tier-1 Cloud Provider",
+        quote: str = "We need autonomous AI tools that fit seamlessly into existing desktop workflows.",
+        goals: Optional[List[str]] = None,
+        pain_points: Optional[List[str]] = None,
+        tech_stack: Optional[List[str]] = None,
+        left: float = 80,
+        top: float = 130,
+        width: float = 800,
+        height: float = 340,
+        accent_color_hex: str = "#2563EB",
+    ) -> Dict[str, Any]:
+        """Create an executive User Persona card with goals, pain points, and tech stack."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        goals = goals or ["Automate slide deck generation", "Standardize multi-agent protocols", "Zero-friction Windows integration"]
+        pain_points = pain_points or ["Hours spent manually formatting shapes", "Tool fragmentation across teams", "Lack of live visual feedback"]
+        tech_stack = tech_stack or ["Python", "FastMCP", "COM Automation", "PowerPoint", "GitHub"]
+
+        # Container card
+        card = slide.Shapes.AddShape(5, left, top, width, height)
+        card.Fill.Solid()
+        card.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+        card.Line.Visible = -1
+        card.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+        card.Line.Weight = 1.0
+
+        # Avatar
+        av_size = 54
+        avatar = slide.Shapes.AddShape(9, left + 20, top + 20, av_size, av_size)
+        avatar.Fill.Solid()
+        avatar.Fill.ForeColor.RGB = hex_to_rgb_int(accent_color_hex)
+        avatar.Line.Visible = 0
+        initials = "".join([w[0] for w in name.split()[:2]]).upper()
+        av_tr = avatar.TextFrame.TextRange
+        av_tr.Text = initials
+        av_tr.Font.Name = "Segoe UI"
+        av_tr.Font.Size = 18
+        av_tr.Font.Bold = 1
+        av_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+        av_tr.ParagraphFormat.Alignment = 2
+
+        # Header Info
+        h_box = slide.Shapes.AddTextbox(1, left + 20 + av_size + 16, top + 16, width - 120, 60)
+        h_box.Fill.Background()
+        h_tr = h_box.TextFrame.TextRange
+        h_tr.Text = f"{name}\n{role}  |  {company}"
+        p1 = h_tr.Paragraphs(1)
+        p1.Font.Name = "Segoe UI"
+        p1.Font.Size = 17
+        p1.Font.Bold = 1
+        p1.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+        p2 = h_tr.Paragraphs(2)
+        p2.Font.Name = "Segoe UI"
+        p2.Font.Size = 12
+        p2.Font.Color.RGB = hex_to_rgb_int(accent_color_hex)
+        p2.Font.Bold = 1
+
+        # Quote
+        q_box = slide.Shapes.AddShape(5, left + 20, top + 84, width - 40, 42)
+        q_box.Fill.Solid()
+        q_box.Fill.ForeColor.RGB = hex_to_rgb_int("#EFF6FF")
+        q_box.Line.Visible = 0
+        q_tr = q_box.TextFrame.TextRange
+        q_tr.Text = f'"{quote}"'
+        q_tr.Font.Name = "Segoe UI"
+        q_tr.Font.Size = 11
+        q_tr.Font.Italic = 1
+        q_tr.Font.Color.RGB = hex_to_rgb_int("#1E40AF")
+        q_tr.ParagraphFormat.Alignment = 2
+
+        # 2 Columns: Goals (Left) vs Pain Points (Right)
+        col_w = (width - 60) / 2
+        cy = top + 138
+
+        # Goals Box
+        g_box = slide.Shapes.AddShape(5, left + 20, cy, col_w, 140)
+        g_box.Fill.Solid()
+        g_box.Fill.ForeColor.RGB = hex_to_rgb_int("#F0FDF4")
+        g_box.Line.Visible = -1
+        g_box.Line.ForeColor.RGB = hex_to_rgb_int("#BBF7D0")
+        gt_box = slide.Shapes.AddTextbox(1, left + 32, cy + 8, col_w - 24, 124)
+        gt_box.Fill.Background()
+        gt_tf = gt_box.TextFrame
+        gt_tf.WordWrap = -1
+        gt_tr = gt_tf.TextRange
+        g_text = "[+] GOALS & MOTIVATIONS:\n" + "\n".join([f"- {g}" for g in goals])
+        gt_tr.Text = g_text
+        gp1 = gt_tr.Paragraphs(1)
+        gp1.Font.Name = "Segoe UI"
+        gp1.Font.Size = 12
+        gp1.Font.Bold = 1
+        gp1.Font.Color.RGB = hex_to_rgb_int("#065F46")
+
+        # Pain Points Box
+        p_box = slide.Shapes.AddShape(5, left + 40 + col_w, cy, col_w, 140)
+        p_box.Fill.Solid()
+        p_box.Fill.ForeColor.RGB = hex_to_rgb_int("#FEF2F2")
+        p_box.Line.Visible = -1
+        p_box.Line.ForeColor.RGB = hex_to_rgb_int("#FECACA")
+        pt_box = slide.Shapes.AddTextbox(1, left + 52 + col_w, cy + 8, col_w - 24, 124)
+        pt_box.Fill.Background()
+        pt_tf = pt_box.TextFrame
+        pt_tf.WordWrap = -1
+        pt_tr = pt_tf.TextRange
+        p_text = "[-] PAIN POINTS & FRICTIONS:\n" + "\n".join([f"- {p}" for p in pain_points])
+        pt_tr.Text = p_text
+        pp1 = pt_tr.Paragraphs(1)
+        pp1.Font.Name = "Segoe UI"
+        pp1.Font.Size = 12
+        pp1.Font.Bold = 1
+        pp1.Font.Color.RGB = hex_to_rgb_int("#991B1B")
+
+        # Tech Stack Pills at bottom
+        tag_x = left + 20
+        tag_y = top + height - 36
+        for t in tech_stack[:5]:
+            tw = min(len(t) * 8 + 16, 95)
+            pill = slide.Shapes.AddShape(5, tag_x, tag_y, tw, 22)
+            pill.Fill.Solid()
+            pill.Fill.ForeColor.RGB = hex_to_rgb_int("#F1F5F9")
+            pill.Line.Visible = 0
+            pt = pill.TextFrame.TextRange
+            pt.Text = t
+            pt.Font.Name = "Segoe UI"
+            pt.Font.Size = 9
+            pt.Font.Bold = 1
+            pt.Font.Color.RGB = hex_to_rgb_int("#475569")
+            pt.ParagraphFormat.Alignment = 2
+            tag_x += tw + 8
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "name": name,
+            "role": role,
+        }
+
+    def add_roi_card(
+        self,
+        slide_index: int,
+        before_cost: str = "$240,000 / yr",
+        after_cost: str = "$36,000 / yr",
+        savings_amount: str = "$204,000",
+        savings_percentage: str = "85% Cost Reduction",
+        payback_period: str = "1.8 Months",
+        metrics_summary: str = "5,400 engineering hours saved annually",
+        left: float = 80,
+        top: float = 140,
+        width: float = 800,
+        height: float = 280,
+    ) -> Dict[str, Any]:
+        """Create an executive ROI & Cost Savings calculation business case card."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        card = slide.Shapes.AddShape(5, left, top, width, height)
+        card.Fill.Solid()
+        card.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+        card.Line.Visible = -1
+        card.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+        card.Line.Weight = 1.0
+
+        banner_w = width * 0.44
+        banner = slide.Shapes.AddShape(5, left + 16, top + 16, banner_w, height - 32)
+        banner.Fill.Solid()
+        banner.Fill.ForeColor.RGB = hex_to_rgb_int("#ECFDF5")
+        banner.Line.Visible = -1
+        banner.Line.ForeColor.RGB = hex_to_rgb_int("#A7F3D0")
+
+        s_box = slide.Shapes.AddTextbox(1, left + 28, top + 36, banner_w - 24, 60)
+        s_box.Fill.Background()
+        s_tr = s_box.TextFrame.TextRange
+        s_tr.Text = savings_amount
+        s_tr.Font.Name = "Segoe UI"
+        s_tr.Font.Size = 38
+        s_tr.Font.Bold = 1
+        s_tr.Font.Color.RGB = hex_to_rgb_int("#065F46")
+
+        sp_pill = slide.Shapes.AddShape(5, left + 28, top + 104, banner_w - 24, 26)
+        sp_pill.Fill.Solid()
+        sp_pill.Fill.ForeColor.RGB = hex_to_rgb_int("#10B981")
+        sp_pill.Line.Visible = 0
+        sp_tr = sp_pill.TextFrame.TextRange
+        sp_tr.Text = f"[v] {savings_percentage.upper()}"
+        sp_tr.Font.Name = "Segoe UI"
+        sp_tr.Font.Size = 10
+        sp_tr.Font.Bold = 1
+        sp_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+        sp_tr.ParagraphFormat.Alignment = 2
+
+        sm_box = slide.Shapes.AddTextbox(1, left + 28, top + 144, banner_w - 24, 50)
+        sm_box.Fill.Background()
+        sm_tf = sm_box.TextFrame
+        sm_tf.WordWrap = -1
+        sm_tr = sm_tf.TextRange
+        sm_tr.Text = metrics_summary
+        sm_tr.Font.Name = "Segoe UI"
+        sm_tr.Font.Size = 12
+        sm_tr.Font.Color.RGB = hex_to_rgb_int("#047857")
+
+        rx = left + banner_w + 36
+        rw = width - banner_w - 52
+
+        r_box = slide.Shapes.AddTextbox(1, rx, top + 26, rw, height - 52)
+        r_box.Fill.Background()
+        r_tf = r_box.TextFrame
+        r_tf.WordWrap = -1
+        r_tr = r_tf.TextRange
+        r_tr.Text = (
+            f"PREVIOUS MANUAL COST\n{before_cost}\n\n"
+            f"AUTOMATED LIVE MCP COST\n{after_cost}\n\n"
+            f"ESTIMATED PAYBACK PERIOD\n{payback_period}"
+        )
+        for p_idx in [1, 4, 7]:
+            p = r_tr.Paragraphs(p_idx)
+            p.Font.Name = "Segoe UI"
+            p.Font.Size = 10
+            p.Font.Bold = 1
+            p.Font.Color.RGB = hex_to_rgb_int("#94A3B8")
+
+        for p_idx in [2, 5, 8]:
+            p = r_tr.Paragraphs(p_idx)
+            p.Font.Name = "Segoe UI"
+            p.Font.Size = 15
+            p.Font.Bold = 1
+            p.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "savings": savings_amount,
+            "percentage": savings_percentage,
+        }
+
+    def add_dashboard_strip(
+        self,
+        slide_index: int,
+        kpis: List[Dict[str, Any]],
+        left: float = 80,
+        top: float = 140,
+        width: float = 800,
+        height: float = 130,
+    ) -> Dict[str, Any]:
+        """Create a unified multi-metric executive dashboard strip."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        num_kpis = len(kpis)
+        if num_kpis == 0:
+            return {"status": "error", "message": "kpis list is empty"}
+
+        card = slide.Shapes.AddShape(5, left, top, width, height)
+        card.Fill.Solid()
+        card.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+        card.Line.Visible = -1
+        card.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+        card.Line.Weight = 1.0
+
+        item_w = width / num_kpis
+
+        for i, kpi in enumerate(kpis):
+            ix = left + (i * item_w)
+            val = str(kpi.get("value", "0"))
+            lbl = str(kpi.get("label", ""))
+            change = str(kpi.get("change", ""))
+            pos = bool(kpi.get("positive", True))
+
+            v_box = slide.Shapes.AddTextbox(1, ix + 16, top + 14, item_w - 32, 40)
+            v_box.Fill.Background()
+            v_tr = v_box.TextFrame.TextRange
+            v_tr.Text = val
+            v_tr.Font.Name = "Segoe UI"
+            v_tr.Font.Size = 28
+            v_tr.Font.Bold = 1
+            v_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+            l_box = slide.Shapes.AddTextbox(1, ix + 16, top + 56, item_w - 32, 24)
+            l_box.Fill.Background()
+            l_tr = l_box.TextFrame.TextRange
+            l_tr.Text = lbl
+            l_tr.Font.Name = "Segoe UI"
+            l_tr.Font.Size = 12
+            l_tr.Font.Bold = 1
+            l_tr.Font.Color.RGB = hex_to_rgb_int("#64748B")
+
+            if change:
+                c_pill = slide.Shapes.AddShape(5, ix + 16, top + 88, min(len(change) * 7 + 16, 110), 22)
+                c_pill.Fill.Solid()
+                c_bg = "#ECFDF5" if pos else "#FEF2F2"
+                c_fg = "#10B981" if pos else "#EF4444"
+                c_pill.Fill.ForeColor.RGB = hex_to_rgb_int(c_bg)
+                c_pill.Line.Visible = 0
+                cp_tr = c_pill.TextFrame.TextRange
+                cp_tr.Text = change
+                cp_tr.Font.Name = "Segoe UI"
+                cp_tr.Font.Size = 9
+                cp_tr.Font.Bold = 1
+                cp_tr.Font.Color.RGB = hex_to_rgb_int(c_fg)
+                cp_tr.ParagraphFormat.Alignment = 2
+
+            if i < num_kpis - 1:
+                div = slide.Shapes.AddShape(1, ix + item_w, top + 15, 1, height - 30)
+                div.Fill.Solid()
+                div.Fill.ForeColor.RGB = hex_to_rgb_int("#F1F5F9")
+                div.Line.Visible = 0
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "kpi_count": num_kpis,
+        }
+
+    def batch_format_deck(
+        self,
+        font_name: str = "Segoe UI",
+        title_color_hex: Optional[str] = None,
+        footer_text: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Apply uniform corporate typography, styling, and optional footer across all slides in deck."""
+        pres = self.get_presentation()
+        updated_slides = 0
+
+        for s in pres.Slides:
+            updated_slides += 1
+            for shape in s.Shapes:
+                if shape.HasTextFrame:
+                    try:
+                        tr = shape.TextFrame.TextRange
+                        tr.Font.Name = font_name
+                        if title_color_hex and shape.Top < 100:
+                            tr.Font.Color.RGB = hex_to_rgb_int(title_color_hex)
+                    except Exception:
+                        pass
+
+        if footer_text:
+            self.add_footer(slide_index=None, text=footer_text, show_slide_number=True)
+
+        return {
+            "status": "success",
+            "updated_slides": updated_slides,
+            "font_name": font_name,
+            "footer_applied": bool(footer_text),
+        }
+
 
 # Global singleton controller instance
 controller = PowerPointController()
