@@ -1677,6 +1677,640 @@ class PowerPointController:
             "scope": f"slide {slide_index}" if slide_index else "all slides",
         }
 
+    def add_callout_box(
+        self,
+        slide_index: int,
+        text: str,
+        title: str = "KEY TAKEAWAY",
+        callout_type: str = "tip",
+        left: float = 80,
+        top: float = 140,
+        width: float = 800,
+        height: float = 110,
+    ) -> Dict[str, Any]:
+        """Create an alert, tip, or callout banner box with accent strip and icon badge."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        themes = {
+            "info": {"accent": "#3B82F6", "bg": "#EFF6FF", "border": "#BFDBFE", "tag": "[i] INFO"},
+            "warning": {"accent": "#F59E0B", "bg": "#FFFBEB", "border": "#FDE68A", "tag": "[!] NOTE"},
+            "danger": {"accent": "#EF4444", "bg": "#FEF2F2", "border": "#FECACA", "tag": "[!] CAUTION"},
+            "success": {"accent": "#10B981", "bg": "#ECFDF5", "border": "#A7F3D0", "tag": "[OK] SUCCESS"},
+            "tip": {"accent": "#8B5CF6", "bg": "#F5F3FF", "border": "#DDD6FE", "tag": "[*] TIP"},
+        }
+        theme = themes.get(callout_type.lower(), themes["tip"])
+
+        # Main box
+        box = slide.Shapes.AddShape(5, left, top, width, height)  # rounded rectangle
+        box.Fill.Solid()
+        box.Fill.ForeColor.RGB = hex_to_rgb_int(theme["bg"])
+        box.Line.Visible = -1
+        box.Line.ForeColor.RGB = hex_to_rgb_int(theme["border"])
+        box.Line.Weight = 1.0
+
+        # Left accent stripe
+        stripe = slide.Shapes.AddShape(5, left, top, 6, height)
+        stripe.Fill.Solid()
+        stripe.Fill.ForeColor.RGB = hex_to_rgb_int(theme["accent"])
+        stripe.Line.Visible = 0
+
+        # Badge pill
+        tag_w = min(len(theme["tag"]) * 8 + 14, 110)
+        badge = slide.Shapes.AddShape(5, left + 20, top + 14, tag_w, 22)
+        badge.Fill.Solid()
+        badge.Fill.ForeColor.RGB = hex_to_rgb_int(theme["accent"])
+        badge.Line.Visible = 0
+        b_tr = badge.TextFrame.TextRange
+        b_tr.Text = theme["tag"]
+        b_tr.Font.Name = "Segoe UI"
+        b_tr.Font.Size = 9
+        b_tr.Font.Bold = 1
+        b_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+        b_tr.ParagraphFormat.Alignment = 2
+
+        # Title
+        title_box = slide.Shapes.AddTextbox(1, left + 26 + tag_w, top + 12, width - tag_w - 40, 26)
+        title_box.Fill.Background()
+        t_tr = title_box.TextFrame.TextRange
+        t_tr.Text = title
+        t_tr.Font.Name = "Segoe UI"
+        t_tr.Font.Size = 14
+        t_tr.Font.Bold = 1
+        t_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+        # Body text
+        body_box = slide.Shapes.AddTextbox(1, left + 20, top + 42, width - 40, height - 50)
+        body_box.Fill.Background()
+        b_tf = body_box.TextFrame
+        b_tf.WordWrap = -1
+        bd_tr = b_tf.TextRange
+        bd_tr.Text = text
+        bd_tr.Font.Name = "Segoe UI"
+        bd_tr.Font.Size = 12
+        bd_tr.Font.Color.RGB = hex_to_rgb_int("#334155")
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "callout_type": callout_type,
+            "title": title,
+        }
+
+    def add_process_steps(
+        self,
+        slide_index: int,
+        steps: List[Dict[str, str]],
+        left: float = 80,
+        top: float = 160,
+        width: float = 800,
+        height: float = 240,
+        accent_color_hex: str = "#2563EB",
+    ) -> Dict[str, Any]:
+        """Create a modern numbered horizontal process workflow with connecting chevrons."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        num_steps = len(steps)
+        if num_steps == 0:
+            return {"status": "error", "message": "steps list is empty"}
+
+        spacing = 24
+        card_w = (width - (spacing * (num_steps - 1))) / num_steps
+        card_h = height
+
+        for i, s in enumerate(steps):
+            cx = left + (i * (card_w + spacing))
+            step_num = str(s.get("number", f"{i + 1}"))
+            title = str(s.get("title", f"Step {i + 1}"))
+            desc = str(s.get("description", ""))
+
+            # Step Card
+            card = slide.Shapes.AddShape(5, cx, top + 25, card_w, card_h - 25)
+            card.Fill.Solid()
+            card.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+            card.Line.Visible = -1
+            card.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+            card.Line.Weight = 1.0
+
+            # Number badge circle (sitting on top border)
+            circle_size = 46
+            circle_x = cx + (card_w - circle_size) / 2
+            circle_y = top
+            circle = slide.Shapes.AddShape(9, circle_x, circle_y, circle_size, circle_size)
+            circle.Fill.Solid()
+            circle.Fill.ForeColor.RGB = hex_to_rgb_int(accent_color_hex)
+            circle.Line.Visible = -1
+            circle.Line.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+            circle.Line.Weight = 3.0
+
+            c_tr = circle.TextFrame.TextRange
+            c_tr.Text = step_num
+            c_tr.Font.Name = "Segoe UI"
+            c_tr.Font.Size = 16
+            c_tr.Font.Bold = 1
+            c_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+            c_tr.ParagraphFormat.Alignment = 2
+
+            # Title
+            t_box = slide.Shapes.AddTextbox(1, cx + 10, top + 55, card_w - 20, 30)
+            t_box.Fill.Background()
+            t_tr = t_box.TextFrame.TextRange
+            t_tr.Text = title
+            t_tr.Font.Name = "Segoe UI"
+            t_tr.Font.Size = 15
+            t_tr.Font.Bold = 1
+            t_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+            t_tr.ParagraphFormat.Alignment = 2
+
+            # Description
+            d_box = slide.Shapes.AddTextbox(1, cx + 14, top + 90, card_w - 28, card_h - 100)
+            d_box.Fill.Background()
+            d_tf = d_box.TextFrame
+            d_tf.WordWrap = -1
+            d_tr = d_tf.TextRange
+            d_tr.Text = desc
+            d_tr.Font.Name = "Segoe UI"
+            d_tr.Font.Size = 11
+            d_tr.Font.Color.RGB = hex_to_rgb_int("#64748B")
+            d_tr.ParagraphFormat.Alignment = 2
+
+            # Connecting arrow to next step
+            if i < num_steps - 1:
+                arrow_w = spacing - 6
+                arrow_h = 14
+                ax = cx + card_w + 3
+                ay = top + 15
+                arrow = slide.Shapes.AddShape(13, ax, ay, arrow_w, arrow_h)  # right arrow
+                arrow.Fill.Solid()
+                arrow.Fill.ForeColor.RGB = hex_to_rgb_int("#94A3B8")
+                arrow.Line.Visible = 0
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "steps_count": num_steps,
+        }
+
+    def add_feature_grid(
+        self,
+        slide_index: int,
+        features: List[Dict[str, str]],
+        columns: int = 3,
+        left: float = 80,
+        top: float = 140,
+        width: float = 800,
+        height: float = 300,
+    ) -> Dict[str, Any]:
+        """Create a multi-column grid of feature/benefit cards."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        num_items = len(features)
+        if num_items == 0:
+            return {"status": "error", "message": "features list is empty"}
+
+        cols = max(1, min(columns, num_items))
+        rows = (num_items + cols - 1) // cols
+
+        col_gap = 20
+        row_gap = 20
+        card_w = (width - (col_gap * (cols - 1))) / cols
+        card_h = (height - (row_gap * (rows - 1))) / rows
+
+        for i, feat in enumerate(features):
+            c = i % cols
+            r = i // cols
+            cx = left + (c * (card_w + col_gap))
+            cy = top + (r * (card_h + row_gap))
+
+            title = str(feat.get("title", f"Feature {i + 1}"))
+            desc = str(feat.get("description", ""))
+            tag = feat.get("tag", "")
+            accent = feat.get("accent_color", "#3B82F6")
+
+            # Card background
+            card = slide.Shapes.AddShape(5, cx, cy, card_w, card_h)
+            card.Fill.Solid()
+            card.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+            card.Line.Visible = -1
+            card.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+            card.Line.Weight = 1.0
+
+            # Top accent line
+            top_bar = slide.Shapes.AddShape(5, cx + 4, cy + 2, card_w - 8, 4)
+            top_bar.Fill.Solid()
+            top_bar.Fill.ForeColor.RGB = hex_to_rgb_int(accent)
+            top_bar.Line.Visible = 0
+
+            cur_y = cy + 14
+            # Optional tag badge
+            if tag:
+                badge = slide.Shapes.AddShape(5, cx + 16, cur_y, min(len(tag) * 8 + 14, 100), 20)
+                badge.Fill.Solid()
+                badge.Fill.ForeColor.RGB = hex_to_rgb_int(accent)
+                badge.Line.Visible = 0
+                bg_tr = badge.TextFrame.TextRange
+                bg_tr.Text = tag.upper()
+                bg_tr.Font.Name = "Segoe UI"
+                bg_tr.Font.Size = 9
+                bg_tr.Font.Bold = 1
+                bg_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+                bg_tr.ParagraphFormat.Alignment = 2
+                cur_y += 28
+
+            # Title
+            t_box = slide.Shapes.AddTextbox(1, cx + 16, cur_y, card_w - 32, 28)
+            t_box.Fill.Background()
+            t_tr = t_box.TextFrame.TextRange
+            t_tr.Text = title
+            t_tr.Font.Name = "Segoe UI"
+            t_tr.Font.Size = 14
+            t_tr.Font.Bold = 1
+            t_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+            cur_y += 32
+
+            # Description
+            d_box = slide.Shapes.AddTextbox(1, cx + 16, cur_y, card_w - 32, card_h - (cur_y - cy) - 10)
+            d_box.Fill.Background()
+            d_tf = d_box.TextFrame
+            d_tf.WordWrap = -1
+            d_tr = d_tf.TextRange
+            d_tr.Text = desc
+            d_tr.Font.Name = "Segoe UI"
+            d_tr.Font.Size = 11
+            d_tr.Font.Color.RGB = hex_to_rgb_int("#64748B")
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "feature_count": num_items,
+        }
+
+    def add_team_card(
+        self,
+        slide_index: int,
+        name: str,
+        role: str,
+        company_or_dept: str = "",
+        bio: str = "",
+        skills_or_tags: Optional[List[str]] = None,
+        avatar_initials: str = "",
+        left: float = 80,
+        top: float = 140,
+        width: float = 380,
+        height: float = 280,
+        accent_color_hex: str = "#2563EB",
+    ) -> Dict[str, Any]:
+        """Create an executive team member or speaker profile card."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        # Background card
+        card = slide.Shapes.AddShape(5, left, top, width, height)
+        card.Fill.Solid()
+        card.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+        card.Line.Visible = -1
+        card.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+        card.Line.Weight = 1.0
+
+        # Avatar circle
+        avatar_size = 56
+        avatar = slide.Shapes.AddShape(9, left + 20, top + 20, avatar_size, avatar_size)
+        avatar.Fill.Solid()
+        avatar.Fill.ForeColor.RGB = hex_to_rgb_int(accent_color_hex)
+        avatar.Line.Visible = 0
+
+        # Initials inside avatar
+        initials = avatar_initials or "".join([w[0] for w in name.split()[:2]]).upper()
+        av_tr = avatar.TextFrame.TextRange
+        av_tr.Text = initials
+        av_tr.Font.Name = "Segoe UI"
+        av_tr.Font.Size = 18
+        av_tr.Font.Bold = 1
+        av_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+        av_tr.ParagraphFormat.Alignment = 2
+
+        # Name & Role next to avatar
+        text_x = left + 20 + avatar_size + 16
+        text_w = width - (avatar_size + 52)
+        n_box = slide.Shapes.AddTextbox(1, text_x, top + 18, text_w, 28)
+        n_box.Fill.Background()
+        n_tr = n_box.TextFrame.TextRange
+        n_tr.Text = name
+        n_tr.Font.Name = "Segoe UI"
+        n_tr.Font.Size = 16
+        n_tr.Font.Bold = 1
+        n_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+        r_box = slide.Shapes.AddTextbox(1, text_x, top + 44, text_w, 22)
+        r_box.Fill.Background()
+        r_tr = r_box.TextFrame.TextRange
+        r_tr.Text = role
+        r_tr.Font.Name = "Segoe UI"
+        r_tr.Font.Size = 12
+        r_tr.Font.Bold = 1
+        r_tr.Font.Color.RGB = hex_to_rgb_int(accent_color_hex)
+
+        if company_or_dept:
+            c_box = slide.Shapes.AddTextbox(1, text_x, top + 64, text_w, 20)
+            c_box.Fill.Background()
+            c_tr = c_box.TextFrame.TextRange
+            c_tr.Text = company_or_dept
+            c_tr.Font.Name = "Segoe UI"
+            c_tr.Font.Size = 10
+            c_tr.Font.Color.RGB = hex_to_rgb_int("#64748B")
+
+        # Divider
+        div = slide.Shapes.AddShape(1, left + 20, top + 92, width - 40, 1)
+        div.Fill.Solid()
+        div.Fill.ForeColor.RGB = hex_to_rgb_int("#F1F5F9")
+        div.Line.Visible = 0
+
+        # Bio
+        if bio:
+            bio_box = slide.Shapes.AddTextbox(1, left + 20, top + 102, width - 40, 100)
+            bio_box.Fill.Background()
+            bio_tf = bio_box.TextFrame
+            bio_tf.WordWrap = -1
+            bio_tr = bio_tf.TextRange
+            bio_tr.Text = bio
+            bio_tr.Font.Name = "Segoe UI"
+            bio_tr.Font.Size = 11
+            bio_tr.Font.Color.RGB = hex_to_rgb_int("#475569")
+
+        # Skills / tags pills at bottom
+        if skills_or_tags:
+            tag_x = left + 20
+            tag_y = top + height - 36
+            for tag in skills_or_tags[:4]:
+                tw = min(len(tag) * 8 + 14, 85)
+                pill = slide.Shapes.AddShape(5, tag_x, tag_y, tw, 20)
+                pill.Fill.Solid()
+                pill.Fill.ForeColor.RGB = hex_to_rgb_int("#F1F5F9")
+                pill.Line.Visible = 0
+                p_tr = pill.TextFrame.TextRange
+                p_tr.Text = tag
+                p_tr.Font.Name = "Segoe UI"
+                p_tr.Font.Size = 9
+                p_tr.Font.Color.RGB = hex_to_rgb_int("#475569")
+                p_tr.ParagraphFormat.Alignment = 2
+                tag_x += tw + 8
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "name": name,
+            "role": role,
+        }
+
+    def add_agenda(
+        self,
+        slide_index: int,
+        items: List[Dict[str, Any]],
+        left: float = 80,
+        top: float = 130,
+        width: float = 800,
+        height: float = 340,
+        active_color_hex: str = "#2563EB",
+    ) -> Dict[str, Any]:
+        """Create a presentation agenda / table of contents with active topic highlighting."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        num_items = len(items)
+        if num_items == 0:
+            return {"status": "error", "message": "items list is empty"}
+
+        row_h = height / num_items
+
+        for i, item in enumerate(items):
+            iy = top + (i * row_h)
+            num = str(item.get("num", f"{i + 1:02d}"))
+            title = str(item.get("title", f"Agenda Item {i + 1}"))
+            desc = str(item.get("desc", ""))
+            duration = str(item.get("duration", ""))
+            is_active = bool(item.get("active", False))
+
+            # Row background
+            row_box = slide.Shapes.AddShape(5, left, iy + 4, width, row_h - 8)
+            row_box.Fill.Solid()
+            row_bg = "#EFF6FF" if is_active else "#FFFFFF"
+            border_c = active_color_hex if is_active else "#E2E8F0"
+            row_box.Fill.ForeColor.RGB = hex_to_rgb_int(row_bg)
+            row_box.Line.Visible = -1
+            row_box.Line.ForeColor.RGB = hex_to_rgb_int(border_c)
+            row_box.Line.Weight = 1.5 if is_active else 1.0
+
+            # Number badge
+            num_pill = slide.Shapes.AddShape(5, left + 14, iy + (row_h - 32) / 2, 36, 32)
+            num_pill.Fill.Solid()
+            num_pill.Fill.ForeColor.RGB = hex_to_rgb_int(active_color_hex if is_active else "#F1F5F9")
+            num_pill.Line.Visible = 0
+            n_tr = num_pill.TextFrame.TextRange
+            n_tr.Text = num
+            n_tr.Font.Name = "Segoe UI"
+            n_tr.Font.Size = 13
+            n_tr.Font.Bold = 1
+            n_tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF" if is_active else "#475569")
+            n_tr.ParagraphFormat.Alignment = 2
+
+            # Title & Description
+            text_x = left + 62
+            text_w = width - 180
+            t_box = slide.Shapes.AddTextbox(1, text_x, iy + 8, text_w, row_h - 16)
+            t_box.Fill.Background()
+            t_tf = t_box.TextFrame
+            t_tf.WordWrap = -1
+            t_tr = t_tf.TextRange
+            if desc:
+                t_tr.Text = f"{title}\n{desc}"
+                p1 = t_tr.Paragraphs(1)
+                p1.Font.Name = "Segoe UI"
+                p1.Font.Size = 14
+                p1.Font.Bold = 1
+                p1.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+                p2 = t_tr.Paragraphs(2)
+                p2.Font.Name = "Segoe UI"
+                p2.Font.Size = 11
+                p2.Font.Color.RGB = hex_to_rgb_int("#64748B")
+            else:
+                t_tr.Text = title
+                t_tr.Font.Name = "Segoe UI"
+                t_tr.Font.Size = 14
+                t_tr.Font.Bold = 1
+                t_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+            # Duration badge on right
+            if duration:
+                dur_box = slide.Shapes.AddShape(5, left + width - 110, iy + (row_h - 26) / 2, 90, 26)
+                dur_box.Fill.Solid()
+                dur_box.Fill.ForeColor.RGB = hex_to_rgb_int("#F8FAFC")
+                dur_box.Line.Visible = -1
+                dur_box.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+                d_tr = dur_box.TextFrame.TextRange
+                d_tr.Text = duration
+                d_tr.Font.Name = "Segoe UI"
+                d_tr.Font.Size = 10
+                d_tr.Font.Color.RGB = hex_to_rgb_int("#64748B")
+                d_tr.ParagraphFormat.Alignment = 2
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "items_count": num_items,
+        }
+
+    def add_watermark(
+        self,
+        text: str = "CONFIDENTIAL",
+        slide_index: Optional[int] = None,
+        font_size: float = 72,
+        color_hex: str = "#E2E8F0",
+        rotation: float = -30.0,
+    ) -> Dict[str, Any]:
+        """Add a semi-transparent diagonal watermark across background of slide(s)."""
+        pres = self.get_presentation()
+        target_slides = [pres.Slides(slide_index)] if slide_index else [pres.Slides(i) for i in range(1, pres.Slides.Count + 1)]
+
+        for s in target_slides:
+            w = pres.PageSetup.SlideWidth
+            h = pres.PageSetup.SlideHeight
+
+            box = s.Shapes.AddTextbox(1, 40, h / 3, w - 80, 160)
+            box.Fill.Background()
+            box.Line.Visible = 0
+            box.Rotation = rotation
+
+            tr = box.TextFrame.TextRange
+            tr.Text = text.upper()
+            tr.Font.Name = "Segoe UI"
+            tr.Font.Size = font_size
+            tr.Font.Bold = 1
+            tr.Font.Color.RGB = hex_to_rgb_int(color_hex)
+            tr.ParagraphFormat.Alignment = 2  # Center
+
+            # Send watermark shape to back
+            box.ZOrder(1)  # msoSendToBack
+
+        return {
+            "status": "success",
+            "scope": f"slide {slide_index}" if slide_index else "all slides",
+            "text": text,
+        }
+
+    def set_shape_zorder(
+        self,
+        slide_index: int,
+        shape_id_or_name: Any,
+        action: str = "bring_to_front",
+    ) -> Dict[str, Any]:
+        """Adjust the z-order layering of a shape ('bring_to_front', 'send_to_back', 'bring_forward', 'send_backward')."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+
+        target_shape = None
+        for s in slide.Shapes:
+            if str(s.Id) == str(shape_id_or_name) or s.Name.lower() == str(shape_id_or_name).lower():
+                target_shape = s
+                break
+
+        if not target_shape:
+            raise ValueError(f"Shape '{shape_id_or_name}' not found on slide {slide_index}")
+
+        zorder_map = {
+            "bring_to_front": 0,   # msoBringToFront
+            "send_to_back": 1,     # msoSendToBack
+            "bring_forward": 2,    # msoBringForward
+            "send_backward": 3,    # msoSendBackward
+        }
+        cmd = zorder_map.get(action.lower())
+        if cmd is None:
+            raise ValueError(f"Invalid zorder action '{action}'. Use: {list(zorder_map.keys())}")
+
+        target_shape.ZOrder(cmd)
+        return {
+            "status": "success",
+            "shape_name": target_shape.Name,
+            "shape_id": target_shape.Id,
+            "action": action,
+            "slide_index": slide_index,
+        }
+
+    def add_comparison_matrix(
+        self,
+        slide_index: int,
+        headers: List[str],
+        rows: List[List[str]],
+        left: float = 80,
+        top: float = 130,
+        width: float = 800,
+        height: float = 320,
+        header_bg_hex: str = "#0F172A",
+        highlight_col_index: Optional[int] = 2,
+    ) -> Dict[str, Any]:
+        """Create a corporate feature comparison matrix / table with zebra stripes and column highlight."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        num_rows = len(rows) + 1
+        num_cols = len(headers)
+
+        table_shape = slide.Shapes.AddTable(num_rows, num_cols, left, top, width, height)
+        table = table_shape.Table
+
+        # Style Header
+        for c_idx, h_text in enumerate(headers):
+            cell = table.Cell(1, c_idx + 1)
+            cell.Shape.Fill.Solid()
+            cell.Shape.Fill.ForeColor.RGB = hex_to_rgb_int(header_bg_hex)
+            tr = cell.Shape.TextFrame.TextRange
+            tr.Text = str(h_text)
+            tr.Font.Name = "Segoe UI"
+            tr.Font.Size = 13
+            tr.Font.Bold = 1
+            tr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF")
+            tr.ParagraphFormat.Alignment = 1 if c_idx == 0 else 2
+
+        # Style Rows
+        for r_idx, row_data in enumerate(rows):
+            is_even = (r_idx % 2 == 0)
+            row_bg = "#FFFFFF" if is_even else "#F8FAFC"
+
+            for c_idx in range(num_cols):
+                val = row_data[c_idx] if c_idx < len(row_data) else ""
+                cell = table.Cell(r_idx + 2, c_idx + 1)
+                cell.Shape.Fill.Solid()
+
+                # Highlight column check (1-indexed)
+                if highlight_col_index and (c_idx + 1 == highlight_col_index):
+                    cell.Shape.Fill.ForeColor.RGB = hex_to_rgb_int("#EFF6FF")
+                else:
+                    cell.Shape.Fill.ForeColor.RGB = hex_to_rgb_int(row_bg)
+
+                tr = cell.Shape.TextFrame.TextRange
+                tr.Text = str(val)
+                tr.Font.Name = "Segoe UI"
+                tr.Font.Size = 11
+                tr.Font.Color.RGB = hex_to_rgb_int("#0F172A" if (highlight_col_index and (c_idx + 1 == highlight_col_index)) else "#334155")
+                tr.Font.Bold = 1 if (highlight_col_index and (c_idx + 1 == highlight_col_index)) else 0
+                tr.ParagraphFormat.Alignment = 1 if c_idx == 0 else 2
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "rows": num_rows,
+            "cols": num_cols,
+            "table_id": table_shape.Id,
+        }
+
 
 # Global singleton controller instance
 controller = PowerPointController()

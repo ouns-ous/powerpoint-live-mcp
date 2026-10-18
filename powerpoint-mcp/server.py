@@ -895,6 +895,260 @@ def ppt_add_footer(
     )
 
 
+@mcp.tool()
+def ppt_add_callout_box(
+    slide_index: int,
+    text: str,
+    title: str = "KEY TAKEAWAY",
+    callout_type: str = "tip",
+    left: float = 80,
+    top: float = 140,
+    width: float = 800,
+    height: float = 110,
+) -> Dict[str, Any]:
+    """Create an alert, tip, or callout banner box with accent strip and icon badge.
+    Args:
+        slide_index: 1-indexed slide number.
+        text: Main message or explanation.
+        title: Header text for the callout (default 'KEY TAKEAWAY').
+        callout_type: Theme style: 'info' (blue), 'warning' (amber), 'danger' (red), 'success' (green), 'tip' (purple).
+        left: X position in points.
+        top: Y position in points.
+        width: Box width in points.
+        height: Box height in points.
+    """
+    return controller.add_callout_box(
+        slide_index=slide_index,
+        text=text,
+        title=title,
+        callout_type=callout_type,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_process_steps(
+    slide_index: int,
+    steps: List[Dict[str, str]],
+    left: float = 80,
+    top: float = 160,
+    width: float = 800,
+    height: float = 240,
+    accent_color_hex: str = "#2563EB",
+) -> Dict[str, Any]:
+    """Create a modern numbered horizontal process workflow with connecting chevrons.
+    Args:
+        slide_index: 1-indexed slide number.
+        steps: List of step dicts: [{'number': '1', 'title': 'Discovery', 'description': 'User interviews'}]
+        left: X position in points.
+        top: Y position in points.
+        width: Total width of the stepper pipeline.
+        height: Total height of the step cards.
+        accent_color_hex: Primary badge and accent color.
+    """
+    return controller.add_process_steps(
+        slide_index=slide_index,
+        steps=steps,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        accent_color_hex=accent_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_feature_grid(
+    slide_index: int,
+    features: List[Dict[str, str]],
+    columns: int = 3,
+    left: float = 80,
+    top: float = 140,
+    width: float = 800,
+    height: float = 300,
+) -> Dict[str, Any]:
+    """Create a multi-column grid of feature or benefit cards with accent badges and headers.
+    Args:
+        slide_index: 1-indexed slide number.
+        features: List of feature dicts: [{'title': 'Ultra Fast', 'description': 'Sub-millisecond responses', 'tag': 'Performance', 'accent_color': '#3B82F6'}]
+        columns: Number of grid columns (default 3, max based on count).
+        left: X position in points.
+        top: Y position in points.
+        width: Total grid width.
+        height: Total grid height.
+    """
+    return controller.add_feature_grid(
+        slide_index=slide_index,
+        features=features,
+        columns=columns,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_team_card(
+    slide_index: int,
+    name: str,
+    role: str,
+    company_or_dept: str = "",
+    bio: str = "",
+    skills_or_tags: Optional[List[str]] = None,
+    avatar_initials: str = "",
+    left: float = 80,
+    top: float = 140,
+    width: float = 380,
+    height: float = 280,
+    accent_color_hex: str = "#2563EB",
+) -> Dict[str, Any]:
+    """Create an executive team member or speaker profile card with avatar badge and skill tags.
+    Args:
+        slide_index: 1-indexed slide number.
+        name: Full person name (e.g. 'Sarah Connor').
+        role: Job title (e.g. 'Chief Technology Officer').
+        company_or_dept: Company or division name.
+        bio: Short biography or responsibilities.
+        skills_or_tags: List of skill pills (e.g. ['AI', 'Cloud', 'Architecture']).
+        avatar_initials: Optional 1-2 character initials for avatar (auto-generated if omitted).
+        left: X position in points.
+        top: Y position in points.
+        width: Card width in points.
+        height: Card height in points.
+        accent_color_hex: Brand or theme accent color.
+    """
+    return controller.add_team_card(
+        slide_index=slide_index,
+        name=name,
+        role=role,
+        company_or_dept=company_or_dept,
+        bio=bio,
+        skills_or_tags=skills_or_tags,
+        avatar_initials=avatar_initials,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        accent_color_hex=accent_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_agenda(
+    slide_index: int,
+    items: List[Dict[str, Any]],
+    left: float = 80,
+    top: float = 130,
+    width: float = 800,
+    height: float = 340,
+    active_color_hex: str = "#2563EB",
+) -> Dict[str, Any]:
+    """Create a presentation agenda / table of contents with active topic highlighting.
+    Args:
+        slide_index: 1-indexed slide number.
+        items: List of agenda item dicts: [{'num': '01', 'title': 'Vision', 'desc': 'Goals for 2027', 'duration': '10 min', 'active': True}]
+        left: X position in points.
+        top: Y position in points.
+        width: Total width of agenda list.
+        height: Total height of agenda list.
+        active_color_hex: Color used for the active/highlighted item.
+    """
+    return controller.add_agenda(
+        slide_index=slide_index,
+        items=items,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        active_color_hex=active_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_watermark(
+    text: str = "CONFIDENTIAL",
+    slide_index: Optional[int] = None,
+    font_size: float = 72,
+    color_hex: str = "#E2E8F0",
+    rotation: float = -30.0,
+) -> Dict[str, Any]:
+    """Add a semi-transparent diagonal watermark across background of slide(s).
+    Args:
+        text: Watermark text (e.g. 'CONFIDENTIAL', 'DRAFT', 'INTERNAL USE ONLY').
+        slide_index: Optional 1-indexed slide number. If omitted, applies to ALL slides.
+        font_size: Font size in pt (default 72).
+        color_hex: Hex color for watermark text (default subtle gray '#E2E8F0').
+        rotation: Angle in degrees (default -30 for diagonal).
+    """
+    return controller.add_watermark(
+        text=text,
+        slide_index=slide_index,
+        font_size=font_size,
+        color_hex=color_hex,
+        rotation=rotation,
+    )
+
+
+@mcp.tool()
+def ppt_set_shape_zorder(
+    slide_index: int,
+    shape_id_or_name: Any,
+    action: str = "bring_to_front",
+) -> Dict[str, Any]:
+    """Adjust the z-order layering of a shape ('bring_to_front', 'send_to_back', 'bring_forward', 'send_backward').
+    Args:
+        slide_index: 1-indexed slide number.
+        shape_id_or_name: Shape ID integer or name.
+        action: Z-order action: 'bring_to_front', 'send_to_back', 'bring_forward', 'send_backward'.
+    """
+    return controller.set_shape_zorder(
+        slide_index=slide_index,
+        shape_id_or_name=shape_id_or_name,
+        action=action,
+    )
+
+
+@mcp.tool()
+def ppt_add_comparison_matrix(
+    slide_index: int,
+    headers: List[str],
+    rows: List[List[str]],
+    left: float = 80,
+    top: float = 130,
+    width: float = 800,
+    height: float = 320,
+    header_bg_hex: str = "#0F172A",
+    highlight_col_index: Optional[int] = 2,
+) -> Dict[str, Any]:
+    """Create a corporate feature comparison matrix / table with zebra stripes and column highlight.
+    Args:
+        slide_index: 1-indexed slide number.
+        headers: Column headers (e.g. ['Feature', 'Free', 'Pro', 'Enterprise']).
+        rows: Rows of data cells (e.g. [['Users', '1', '10', 'Unlimited'], ['Support', 'Community', '24/7 Priority', 'Dedicated SAM']]).
+        left: X position in points.
+        top: Y position in points.
+        width: Table width in points.
+        height: Table height in points.
+        header_bg_hex: Background color for header row.
+        highlight_col_index: Optional 1-indexed column to highlight with brand accent tint.
+    """
+    return controller.add_comparison_matrix(
+        slide_index=slide_index,
+        headers=headers,
+        rows=rows,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        header_bg_hex=header_bg_hex,
+        highlight_col_index=highlight_col_index,
+    )
+
+
 def main():
     mcp.run()
 

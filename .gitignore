@@ -32,3 +32,8 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 .DS_Store
+
+# Agent skills cache
+.agents/
+word-mcp/
+excel-mcp/

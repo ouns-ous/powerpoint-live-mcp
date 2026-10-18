@@ -88,6 +88,14 @@
 | `ppt_add_pros_cons` | مقارنة جانبية ببطاقتين للإيجابيات والسلبيات (Pros & Cons) |
 | `ppt_add_pricing_table`| جدول خطط الأسعار والاشتراكات (Pricing Table) مع تمييز الباقة الأكثر طلباً |
 | `ppt_add_donut_chart` | رسم دائري لمؤشر التقدم والنسب المئوية (Donut Progress Chart) |
+| `ppt_add_callout_box` | صندوق تنبيه / نصيحة / تحذير (Alert & Callout Box) مع شريط جانبي ملون وأيقونة تصنيف |
+| `ppt_add_process_steps`| خط سير عمليات ومراحل مرقمة (Numbered Workflow Process) مع أسهم ربط حديثة |
+| `ppt_add_feature_grid` | شبكة مصفوفة متعددة الأعمدة لبطاقات المميزات والخدمات (Feature Grid) |
+| `ppt_add_team_card` | بطاقة تعريف بأعضاء الفريق والمتحدثين (Team Profile Card) بالأفاتار والمهارات |
+| `ppt_add_agenda` | جدول أعمال الاجتماع أو العرض (Meeting Agenda / TOC) مع تمييز الفقرة الحالية |
+| `ppt_add_watermark` | علامة مائية قطرية شبه شفافة (Watermark: DRAFT / CONFIDENTIAL) خلف الشرائح |
+| `ppt_set_shape_zorder` | التحكم في ترتيب طبقات العناصر (Bring to Front / Send to Back) |
+| `ppt_add_comparison_matrix`| جدول مصفوفة المقارنة المتقدم (Feature Comparison Matrix) مع تمييز الباقة المختارة |
 | `ppt_delete_shape` | حذف شكل معين من الشريحة عبر الاسم أو المعرف (ID) |
 | `ppt_clear_slide` | مسح وتنظيف كل الأشكال من الشريحة لإعادة تعيينها |
 | `ppt_add_footer` | إضافة تذييل احترافي (Footer) مع رقم الشريحة وعبارة السرية على كل الشرائح |
