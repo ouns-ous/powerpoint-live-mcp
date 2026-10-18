@@ -96,6 +96,14 @@
 | `ppt_add_watermark` | علامة مائية قطرية شبه شفافة (Watermark: DRAFT / CONFIDENTIAL) خلف الشرائح |
 | `ppt_set_shape_zorder` | التحكم في ترتيب طبقات العناصر (Bring to Front / Send to Back) |
 | `ppt_add_comparison_matrix`| جدول مصفوفة المقارنة المتقدم (Feature Comparison Matrix) مع تمييز الباقة المختارة |
+| `ppt_add_swot_matrix` | مصفوفة التحليل الاستراتيجي الرباعي (SWOT Matrix 2x2: S, W, O, T) بتنسيق ملون أنيق |
+| `ppt_add_funnel` | قمع التسويق والتحويل (Sales & Conversion Funnel) مع النسب التنازلية |
+| `ppt_add_before_after` | مقارنة التحول والنتائج قبل وبعد (Before vs After) مع سهم التحول |
+| `ppt_add_stat_hero` | بطاقة الرقم القياسي البارز (Hero KPI Stat) مع نسبة النمو وشارة الاتجاه |
+| `ppt_add_faq_accordion`| قائمة الأسئلة الشائعة والأجوبة (FAQ & Q&A Accordion) ببطاقات منظمة |
+| `ppt_add_checklist` | قائمة مهام وتحقق مع شارات الحالة (Checklist: Done, In Progress, Pending) |
+| `ppt_add_review_card` | بطاقة تقييم وشهادة 5 نجوم (5-Star Rating & Trust Card) وشارة المنصة |
+| `ppt_style_shape` | تنسيق وتخصيص متقدم للأشكال (الشفافية Opacity، الظلال Shadow، الحدود واللون) |
 | `ppt_delete_shape` | حذف شكل معين من الشريحة عبر الاسم أو المعرف (ID) |
 | `ppt_clear_slide` | مسح وتنظيف كل الأشكال من الشريحة لإعادة تعيينها |
 | `ppt_add_footer` | إضافة تذييل احترافي (Footer) مع رقم الشريحة وعبارة السرية على كل الشرائح |

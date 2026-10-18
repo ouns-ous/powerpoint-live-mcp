@@ -1149,6 +1149,281 @@ def ppt_add_comparison_matrix(
     )
 
 
+@mcp.tool()
+def ppt_add_swot_matrix(
+    slide_index: int,
+    strengths: List[str],
+    weaknesses: List[str],
+    opportunities: List[str],
+    threats: List[str],
+    left: float = 80,
+    top: float = 130,
+    width: float = 800,
+    height: float = 340,
+) -> Dict[str, Any]:
+    """Create a 2x2 strategic SWOT Matrix with color-coded quadrants and badges.
+    Args:
+        slide_index: 1-indexed slide number.
+        strengths: List of internal strengths / advantages.
+        weaknesses: List of internal weaknesses / challenges.
+        opportunities: List of external market opportunities.
+        threats: List of external competitive/market threats.
+        left: X position in points.
+        top: Y position in points.
+        width: Total grid width.
+        height: Total grid height.
+    """
+    return controller.add_swot_matrix(
+        slide_index=slide_index,
+        strengths=strengths,
+        weaknesses=weaknesses,
+        opportunities=opportunities,
+        threats=threats,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_funnel(
+    slide_index: int,
+    stages: List[Dict[str, Any]],
+    left: float = 120,
+    top: float = 130,
+    width: float = 720,
+    height: float = 340,
+    primary_color_hex: str = "#2563EB",
+) -> Dict[str, Any]:
+    """Create a tapered horizontal marketing or conversion sales funnel.
+    Args:
+        slide_index: 1-indexed slide number.
+        stages: List of stage dicts: [{'name': 'Awareness', 'value': '100,000', 'pct': '100%'}, {'name': 'Conversion', 'value': '2,500', 'pct': '2.5%'}]
+        left: X position in points.
+        top: Y position in points.
+        width: Width of top tier.
+        height: Total funnel height.
+        primary_color_hex: Brand accent color for stripes and badges.
+    """
+    return controller.add_funnel(
+        slide_index=slide_index,
+        stages=stages,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        primary_color_hex=primary_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_before_after(
+    slide_index: int,
+    before_title: str = "Without Automation",
+    before_items: Optional[List[str]] = None,
+    after_title: str = "With PowerPoint Live MCP",
+    after_items: Optional[List[str]] = None,
+    left: float = 80,
+    top: float = 130,
+    width: float = 800,
+    height: float = 330,
+) -> Dict[str, Any]:
+    """Create a side-by-side Before vs After transformation comparison with connector arrow.
+    Args:
+        slide_index: 1-indexed slide number.
+        before_title: Title for left column (e.g. 'Old Manual Process').
+        before_items: List of pain points or challenges.
+        after_title: Title for right column (e.g. 'Modern AI Automation').
+        after_items: List of benefits, speedups, or outcomes.
+        left: X position in points.
+        top: Y position in points.
+        width: Total width of both columns.
+        height: Height of comparison cards.
+    """
+    return controller.add_before_after(
+        slide_index=slide_index,
+        before_title=before_title,
+        before_items=before_items,
+        after_title=after_title,
+        after_items=after_items,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_stat_hero(
+    slide_index: int,
+    number: str,
+    label: str,
+    trend: Optional[str] = None,
+    trend_positive: bool = True,
+    details: Optional[str] = None,
+    left: float = 80,
+    top: float = 140,
+    width: float = 380,
+    height: float = 240,
+    accent_color_hex: str = "#2563EB",
+) -> Dict[str, Any]:
+    """Create a high-impact KPI Hero Stat card with massive number, trend badge, and label.
+    Args:
+        slide_index: 1-indexed slide number.
+        number: Hero metric number or text (e.g. '$14.2M', '+320%', '99.99%', '10x').
+        label: Metric title or description (e.g. 'Annual Recurring Revenue').
+        trend: Optional trend pill text (e.g. '▲ +45% YoY').
+        trend_positive: Whether trend is positive (green) or negative (red).
+        details: Optional caption or footnote details.
+        left: X position in points.
+        top: Y position in points.
+        width: Card width.
+        height: Card height.
+        accent_color_hex: Top accent bar color.
+    """
+    return controller.add_stat_hero(
+        slide_index=slide_index,
+        number=number,
+        label=label,
+        trend=trend,
+        trend_positive=trend_positive,
+        details=details,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        accent_color_hex=accent_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_add_faq_accordion(
+    slide_index: int,
+    qa_pairs: List[Dict[str, str]],
+    left: float = 80,
+    top: float = 130,
+    width: float = 800,
+    height: float = 340,
+) -> Dict[str, Any]:
+    """Create a professional FAQ or Q&A accordion card list.
+    Args:
+        slide_index: 1-indexed slide number.
+        qa_pairs: List of dicts: [{'question': 'How does it work?', 'answer': 'Direct COM automation via FastMCP.'}]
+        left: X position in points.
+        top: Y position in points.
+        width: List width.
+        height: List height.
+    """
+    return controller.add_faq_accordion(
+        slide_index=slide_index,
+        qa_pairs=qa_pairs,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_checklist(
+    slide_index: int,
+    items: List[Dict[str, Any]],
+    left: float = 80,
+    top: float = 130,
+    width: float = 800,
+    height: float = 330,
+) -> Dict[str, Any]:
+    """Create a styled checklist with status badges (completed, in_progress, pending, blocked).
+    Args:
+        slide_index: 1-indexed slide number.
+        items: List of item dicts: [{'text': 'Core API Architecture', 'status': 'completed', 'badge': 'DONE'}]
+        left: X position in points.
+        top: Y position in points.
+        width: List width.
+        height: List height.
+    """
+    return controller.add_checklist(
+        slide_index=slide_index,
+        items=items,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_add_review_card(
+    slide_index: int,
+    rating: float = 5.0,
+    quote: str = "",
+    author: str = "Client Reviewer",
+    company: str = "",
+    platform: str = "G2 Leader",
+    left: float = 80,
+    top: float = 140,
+    width: float = 380,
+    height: float = 260,
+) -> Dict[str, Any]:
+    """Create a 5-star customer review or testimonial trust card with star rating and source pill.
+    Args:
+        slide_index: 1-indexed slide number.
+        rating: Score from 1.0 to 5.0 (renders gold stars).
+        quote: Customer review text.
+        author: Reviewer full name.
+        company: Company or job title.
+        platform: Platform pill badge (e.g. 'G2 Leader', 'Trustpilot 5/5', 'Capterra').
+        left: X position in points.
+        top: Y position in points.
+        width: Card width.
+        height: Card height.
+    """
+    return controller.add_review_card(
+        slide_index=slide_index,
+        rating=rating,
+        quote=quote,
+        author=author,
+        company=company,
+        platform=platform,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+    )
+
+
+@mcp.tool()
+def ppt_style_shape(
+    slide_index: int,
+    shape_id_or_name: Any,
+    fill_color_hex: Optional[str] = None,
+    border_color_hex: Optional[str] = None,
+    border_weight: Optional[float] = None,
+    opacity: Optional[float] = None,
+    has_shadow: Optional[bool] = None,
+) -> Dict[str, Any]:
+    """Format and style an existing shape (color, border, opacity, shadow).
+    Args:
+        slide_index: 1-indexed slide number.
+        shape_id_or_name: Shape ID integer or name.
+        fill_color_hex: New fill color in hex.
+        border_color_hex: New border/line color in hex.
+        border_weight: Border line thickness in pt.
+        opacity: Opacity from 0.0 (transparent) to 1.0 (opaque).
+        has_shadow: Whether to enable drop shadow.
+    """
+    return controller.style_shape(
+        slide_index=slide_index,
+        shape_id_or_name=shape_id_or_name,
+        fill_color_hex=fill_color_hex,
+        border_color_hex=border_color_hex,
+        border_weight=border_weight,
+        opacity=opacity,
+        has_shadow=has_shadow,
+    )
+
+
 def main():
     mcp.run()
 
