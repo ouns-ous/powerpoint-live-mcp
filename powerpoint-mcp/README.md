@@ -104,6 +104,14 @@
 | `ppt_add_checklist` | قائمة مهام وتحقق مع شارات الحالة (Checklist: Done, In Progress, Pending) |
 | `ppt_add_review_card` | بطاقة تقييم وشهادة 5 نجوم (5-Star Rating & Trust Card) وشارة المنصة |
 | `ppt_style_shape` | تنسيق وتخصيص متقدم للأشكال (الشفافية Opacity، الظلال Shadow، الحدود واللون) |
+| `ppt_split_slide_to_progressive_deck` | تقسيم وتفجير شريحة واحدة متعددة العناصر إلى عدة شرائح متتالية يبرز فيها عنصر واحد في كل خطوة مع تبهيت الباقي |
+| `ppt_create_progressive_deck` | إنشاء عرض تقدمي كامل (Storyline Deck) مع شريط تتبع علوي وبطاقات تتنقل بين المكتمل والنشط والمستقبلي |
+| `ppt_animate_sequence` | تشغيل حركات دخول متسلسلة للأشكال والبطاقات بنقرة واحدة أو بتأخير زمني (On-Click / Delay) |
+| `ppt_animate_bullet_points` | إظهار عناصر القوائم النقطية فقرة بفقرة (Paragraph Reveal) تفاعلياً عند كل نقرة |
+| `ppt_animate_emphasis` | حركات تأكيد وجذب الانتباه (Emphasis: Pulse, Grow/Shrink, Spin, Teeter) لأرقام وبطاقات معينة أثناء الشرح |
+| `ppt_animate_exit` | حركات خروج وتلاشي (Exit Animations: Fade Out, Disappear, Fly Out) لإخفاء العناصر السابقة |
+| `ppt_clear_animations` | مسح وتنظيف كل الحركات والمؤثرات من الشريحة لإعادة ضبطها |
+| `ppt_add_animated_stepper` | رسم مسار خطوات تفاعلي (Animated Stepper Pipeline) مجهز بحركات دخول متزامنة تلقائياً |
 | `ppt_delete_shape` | حذف شكل معين من الشريحة عبر الاسم أو المعرف (ID) |
 | `ppt_clear_slide` | مسح وتنظيف كل الأشكال من الشريحة لإعادة تعيينها |
 | `ppt_add_footer` | إضافة تذييل احترافي (Footer) مع رقم الشريحة وعبارة السرية على كل الشرائح |

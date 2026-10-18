@@ -2992,6 +2992,452 @@ class PowerPointController:
             "slide_index": slide_index,
         }
 
+    def split_slide_to_progressive_deck(
+        self,
+        slide_index: int,
+        shape_ids_or_names: Optional[List[Any]] = None,
+        mode: str = "dim",
+        highlight_border_color_hex: str = "#2563EB",
+        keep_master_slide: bool = False,
+    ) -> Dict[str, Any]:
+        """Split a multi-element slide into N progressive sequential slides,
+        where on each slide one element is highlighted while previous are dimmed and future are hidden/dimmed.
+        """
+        pres = self.get_presentation()
+        master_slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        # Identify targets
+        targets = []
+        if shape_ids_or_names:
+            targets = list(shape_ids_or_names)
+        else:
+            for s in master_slide.Shapes:
+                if s.Top > 100:
+                    targets.append(s.Id)
+
+        if not targets:
+            raise ValueError("No target shapes found to create progressive deck")
+
+        num_steps = len(targets)
+        created_slide_indices = []
+
+        # Duplicate slide for each step
+        for k in range(num_steps):
+            dup_range = master_slide.Duplicate()
+            dup_slide = dup_range.Item(1)
+            dup_slide.SlideShowTransition.EntryEffect = 1793  # fade
+            dup_slide.SlideShowTransition.Speed = 2  # medium
+
+            for idx, target_ref in enumerate(targets):
+                target_shape = None
+                for s in dup_slide.Shapes:
+                    if str(s.Id) == str(target_ref) or s.Name.lower() == str(target_ref).lower():
+                        target_shape = s
+                        break
+
+                if not target_shape:
+                    continue
+
+                if idx == k:
+                    target_shape.Fill.Transparency = 0.0
+                    target_shape.Line.Visible = -1
+                    target_shape.Line.ForeColor.RGB = hex_to_rgb_int(highlight_border_color_hex)
+                    target_shape.Line.Weight = 2.5
+                elif idx < k:
+                    target_shape.Fill.Transparency = 0.72
+                    target_shape.Line.Visible = -1
+                    target_shape.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+                    target_shape.Line.Weight = 1.0
+                    if target_shape.HasTextFrame:
+                        try:
+                            target_shape.TextFrame.TextRange.Font.Color.RGB = hex_to_rgb_int("#94A3B8")
+                        except Exception:
+                            pass
+                else:
+                    if mode.lower() == "hide":
+                        target_shape.Visible = 0
+                    else:
+                        target_shape.Fill.Transparency = 0.88
+                        target_shape.Line.Visible = -1
+                        target_shape.Line.ForeColor.RGB = hex_to_rgb_int("#F1F5F9")
+                        target_shape.Line.Weight = 1.0
+                        if target_shape.HasTextFrame:
+                            try:
+                                target_shape.TextFrame.TextRange.Font.Color.RGB = hex_to_rgb_int("#CBD5E1")
+                            except Exception:
+                                pass
+
+            created_slide_indices.append(dup_slide.SlideIndex)
+
+        if not keep_master_slide:
+            master_slide.Delete()
+
+        return {
+            "status": "success",
+            "progressive_slides_count": num_steps,
+            "mode": mode,
+            "message": f"Created {num_steps} progressive sequential slides",
+        }
+
+    def create_progressive_deck(
+        self,
+        title: str,
+        steps: List[Dict[str, str]],
+        accent_color_hex: str = "#2563EB",
+        bg_color_hex: str = "#FFFFFF",
+    ) -> Dict[str, Any]:
+        """Generate a complete multi-slide progressive reveal presentation from a list of steps.
+        Each slide highlights the current step, advances the top progress tracker, and dims prior steps.
+        """
+        pres = self.get_presentation()
+        num_steps = len(steps)
+        if num_steps == 0:
+            return {"status": "error", "message": "steps list is empty"}
+
+        w = pres.PageSetup.SlideWidth
+        h = pres.PageSetup.SlideHeight
+
+        created_slides = []
+
+        for k in range(num_steps):
+            slide = pres.Slides.Add(pres.Slides.Count + 1, 12)  # blank layout
+            self._app.ActiveWindow.View.GotoSlide(slide.SlideIndex)
+            slide.SlideShowTransition.EntryEffect = 1793  # fade
+            slide.SlideShowTransition.Speed = 2
+
+            if bg_color_hex != "#FFFFFF":
+                slide.Background.Fill.Solid()
+                slide.Background.Fill.ForeColor.RGB = hex_to_rgb_int(bg_color_hex)
+
+            # Slide Main Header
+            t_box = slide.Shapes.AddTextbox(1, 80, 40, w - 160, 40)
+            t_tr = t_box.TextFrame.TextRange
+            t_tr.Text = f"{title}"
+            t_tr.Font.Name = "Segoe UI"
+            t_tr.Font.Size = 24
+            t_tr.Font.Bold = 1
+            t_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A")
+
+            # Progress Tracker Header (Step k+1 of N)
+            pill_w = (w - 160 - (12 * (num_steps - 1))) / num_steps
+            pill_y = 90
+            for idx, st in enumerate(steps):
+                px = 80 + (idx * (pill_w + 12))
+                pill = slide.Shapes.AddShape(5, px, pill_y, pill_w, 28)
+                pill.Fill.Solid()
+
+                if idx < k:
+                    pill.Fill.ForeColor.RGB = hex_to_rgb_int("#ECFDF5")
+                    pill.Line.Visible = -1
+                    pill.Line.ForeColor.RGB = hex_to_rgb_int("#A7F3D0")
+                    p_text = f"[v] {st.get('title', f'Step {idx+1}')}"
+                    p_color = "#10B981"
+                elif idx == k:
+                    pill.Fill.ForeColor.RGB = hex_to_rgb_int(accent_color_hex)
+                    pill.Line.Visible = -1
+                    pill.Line.ForeColor.RGB = hex_to_rgb_int(accent_color_hex)
+                    p_text = f"[*] {st.get('title', f'Step {idx+1}')}"
+                    p_color = "#FFFFFF"
+                else:
+                    pill.Fill.ForeColor.RGB = hex_to_rgb_int("#F8FAFC")
+                    pill.Line.Visible = -1
+                    pill.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+                    p_text = f" {idx+1}. {st.get('title', f'Step {idx+1}')}"
+                    p_color = "#94A3B8"
+
+                ptr = pill.TextFrame.TextRange
+                ptr.Text = p_text
+                ptr.Font.Name = "Segoe UI"
+                ptr.Font.Size = 10
+                ptr.Font.Bold = 1 if idx == k else 0
+                ptr.Font.Color.RGB = hex_to_rgb_int(p_color)
+                ptr.ParagraphFormat.Alignment = 2
+
+            # Main Content Area: Cards for each step
+            card_gap = 18
+            card_w = (w - 160 - (card_gap * (num_steps - 1))) / num_steps
+            card_y = 140
+            card_h = 320
+
+            for idx, st in enumerate(steps):
+                cx = 80 + (idx * (card_w + card_gap))
+                card = slide.Shapes.AddShape(5, cx, card_y, card_w, card_h)
+                card.Fill.Solid()
+
+                is_active = (idx == k)
+                is_past = (idx < k)
+
+                if is_active:
+                    card.Fill.ForeColor.RGB = hex_to_rgb_int("#FFFFFF")
+                    card.Line.Visible = -1
+                    card.Line.ForeColor.RGB = hex_to_rgb_int(accent_color_hex)
+                    card.Line.Weight = 2.5
+                    top_bar = slide.Shapes.AddShape(5, cx + 4, card_y + 2, card_w - 8, 4)
+                    top_bar.Fill.Solid()
+                    top_bar.Fill.ForeColor.RGB = hex_to_rgb_int(accent_color_hex)
+                    top_bar.Line.Visible = 0
+                elif is_past:
+                    card.Fill.ForeColor.RGB = hex_to_rgb_int("#F8FAFC")
+                    card.Line.Visible = -1
+                    card.Line.ForeColor.RGB = hex_to_rgb_int("#E2E8F0")
+                    card.Line.Weight = 1.0
+                else:
+                    card.Fill.ForeColor.RGB = hex_to_rgb_int("#FAFAFA")
+                    card.Fill.Transparency = 0.5
+                    card.Line.Visible = -1
+                    card.Line.ForeColor.RGB = hex_to_rgb_int("#F1F5F9")
+                    card.Line.Weight = 1.0
+
+                # Step Number Pill
+                np = slide.Shapes.AddShape(9, cx + 16, card_y + 16, 32, 32)
+                np.Fill.Solid()
+                np_bg = accent_color_hex if is_active else ("#10B981" if is_past else "#E2E8F0")
+                np.Fill.ForeColor.RGB = hex_to_rgb_int(np_bg)
+                np.Line.Visible = 0
+                nptr = np.TextFrame.TextRange
+                nptr.Text = "[v]" if is_past else f"{idx+1}"
+                nptr.Font.Name = "Segoe UI"
+                nptr.Font.Size = 12
+                nptr.Font.Bold = 1
+                nptr.Font.Color.RGB = hex_to_rgb_int("#FFFFFF" if (is_active or is_past) else "#94A3B8")
+                nptr.ParagraphFormat.Alignment = 2
+
+                # Step Title
+                st_box = slide.Shapes.AddTextbox(1, cx + 16, card_y + 56, card_w - 32, 40)
+                st_tr = st_box.TextFrame.TextRange
+                st_tr.Text = st.get("title", f"Step {idx+1}")
+                st_tr.Font.Name = "Segoe UI"
+                st_tr.Font.Size = 15 if is_active else 13
+                st_tr.Font.Bold = 1
+                st_tr.Font.Color.RGB = hex_to_rgb_int("#0F172A" if is_active else ("#475569" if is_past else "#94A3B8"))
+
+                # Step Description
+                sd_box = slide.Shapes.AddTextbox(1, cx + 16, card_y + 100, card_w - 32, card_h - 110)
+                sd_tf = sd_box.TextFrame
+                sd_tf.WordWrap = -1
+                sd_tr = sd_tf.TextRange
+                sd_tr.Text = st.get("description", "")
+                sd_tr.Font.Name = "Segoe UI"
+                sd_tr.Font.Size = 12 if is_active else 11
+                sd_tr.Font.Color.RGB = hex_to_rgb_int("#334155" if is_active else ("#64748B" if is_past else "#CBD5E1"))
+
+            created_slides.append(slide.SlideIndex)
+
+        return {
+            "status": "success",
+            "slides_count": num_steps,
+            "created_slides": created_slides,
+            "title": title,
+        }
+
+    def animate_sequence(
+        self,
+        slide_index: int,
+        shape_ids_or_names: List[Any],
+        effect: str = "fade",
+        trigger: str = "on_click",
+        duration: float = 0.5,
+    ) -> Dict[str, Any]:
+        """Apply sequential entrance animations to a list of shapes on a single slide."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        seq = slide.TimeLine.MainSequence
+        effect_code = ANIMATION_EFFECTS.get(effect.lower(), 10)
+
+        trigger_type = 1
+        if trigger.lower() == "after_previous":
+            trigger_type = 3
+        elif trigger.lower() == "with_previous":
+            trigger_type = 2
+
+        animated = []
+        for i, shape_ref in enumerate(shape_ids_or_names):
+            target_shape = None
+            for s in slide.Shapes:
+                if str(s.Id) == str(shape_ref) or s.Name.lower() == str(shape_ref).lower():
+                    target_shape = s
+                    break
+
+            if not target_shape:
+                continue
+
+            eff = seq.AddEffect(target_shape, effect_code, 0, trigger_type)
+            eff.Timing.Duration = duration
+            animated.append(target_shape.Name)
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "animated_count": len(animated),
+            "shapes": animated,
+            "effect": effect,
+            "trigger": trigger,
+        }
+
+    def animate_bullet_points(
+        self,
+        slide_index: int,
+        shape_id_or_name: Any,
+        effect: str = "fade",
+    ) -> Dict[str, Any]:
+        """Animate bullet points or paragraphs in a textbox one by one on click."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        target_shape = None
+        for s in slide.Shapes:
+            if str(s.Id) == str(shape_id_or_name) or s.Name.lower() == str(shape_id_or_name).lower():
+                target_shape = s
+                break
+
+        if not target_shape:
+            raise ValueError(f"Shape '{shape_id_or_name}' not found on slide {slide_index}")
+
+        effect_code = ANIMATION_EFFECTS.get(effect.lower(), 10)
+        eff = slide.TimeLine.MainSequence.AddEffect(target_shape, effect_code, 1, 1)
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "shape_name": target_shape.Name,
+            "effect": effect,
+        }
+
+    def animate_emphasis(
+        self,
+        slide_index: int,
+        shape_id_or_name: Any,
+        effect: str = "pulse",
+        trigger: str = "on_click",
+    ) -> Dict[str, Any]:
+        """Add emphasis animation (pulse, grow_shrink, spin, teeter) to a shape."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        target_shape = None
+        for s in slide.Shapes:
+            if str(s.Id) == str(shape_id_or_name) or s.Name.lower() == str(shape_id_or_name).lower():
+                target_shape = s
+                break
+
+        if not target_shape:
+            raise ValueError(f"Shape '{shape_id_or_name}' not found on slide {slide_index}")
+
+        emphasis_map = {
+            "pulse": 29,
+            "grow_shrink": 31,
+            "spin": 28,
+            "teeter": 33,
+            "color_wave": 34,
+        }
+        eff_code = emphasis_map.get(effect.lower(), 29)
+        trigger_type = 3 if trigger.lower() == "after_previous" else (2 if trigger.lower() == "with_previous" else 1)
+
+        eff = slide.TimeLine.MainSequence.AddEffect(target_shape, eff_code, 0, trigger_type)
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "shape_name": target_shape.Name,
+            "effect": effect,
+        }
+
+    def animate_exit(
+        self,
+        slide_index: int,
+        shape_id_or_name: Any,
+        effect: str = "fade",
+        trigger: str = "on_click",
+    ) -> Dict[str, Any]:
+        """Add exit animation (fade_out, disappear, fly_out) to dismiss a shape."""
+        pres = self.get_presentation()
+        slide = pres.Slides(slide_index)
+        self._app.ActiveWindow.View.GotoSlide(slide_index)
+
+        target_shape = None
+        for s in slide.Shapes:
+            if str(s.Id) == str(shape_id_or_name) or s.Name.lower() == str(shape_id_or_name).lower():
+                target_shape = s
+                break
+
+        if not target_shape:
+            raise ValueError(f"Shape '{shape_id_or_name}' not found on slide {slide_index}")
+
+        eff_code = ANIMATION_EFFECTS.get(effect.lower(), 10)
+        trigger_type = 3 if trigger.lower() == "after_previous" else 1
+        eff = slide.TimeLine.MainSequence.AddEffect(target_shape, eff_code, 0, trigger_type)
+        eff.Exit = -1
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "shape_name": target_shape.Name,
+            "exit_effect": effect,
+        }
+
+    def clear_animations(self, slide_index: Optional[int] = None) -> Dict[str, Any]:
+        """Clear all animation effects from a slide or all slides."""
+        pres = self.get_presentation()
+        target_slides = [pres.Slides(slide_index)] if slide_index else [pres.Slides(i) for i in range(1, pres.Slides.Count + 1)]
+
+        cleared_total = 0
+        for s in target_slides:
+            seq = s.TimeLine.MainSequence
+            cnt = seq.Count
+            for i in range(cnt, 0, -1):
+                seq(i).Delete()
+            cleared_total += cnt
+
+        return {
+            "status": "success",
+            "cleared_effects_count": cleared_total,
+            "scope": f"slide {slide_index}" if slide_index else "all slides",
+        }
+
+    def add_animated_stepper(
+        self,
+        slide_index: int,
+        steps: List[Dict[str, str]],
+        left: float = 80,
+        top: float = 150,
+        width: float = 800,
+        height: float = 260,
+        animate: bool = True,
+        trigger: str = "on_click",
+    ) -> Dict[str, Any]:
+        """Create a process stepper pipeline with automatic sequential entrance animations."""
+        res = self.add_process_steps(
+            slide_index=slide_index,
+            steps=steps,
+            left=left,
+            top=top,
+            width=width,
+            height=height,
+        )
+
+        if animate:
+            pres = self.get_presentation()
+            slide = pres.Slides(slide_index)
+            recent_shapes = [slide.Shapes(i) for i in range(max(1, slide.Shapes.Count - (len(steps) * 4)), slide.Shapes.Count + 1)]
+            seq = slide.TimeLine.MainSequence
+            trig_code = 1 if trigger.lower() == "on_click" else 3
+
+            for s in recent_shapes:
+                if s.Type == 1 or s.Type == 5:
+                    eff = seq.AddEffect(s, 10, 0, trig_code)
+                    eff.Timing.Duration = 0.4
+
+        return {
+            "status": "success",
+            "slide_index": slide_index,
+            "steps_count": len(steps),
+            "animated": animate,
+        }
+
 
 # Global singleton controller instance
 controller = PowerPointController()

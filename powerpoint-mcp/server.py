@@ -1424,6 +1424,186 @@ def ppt_style_shape(
     )
 
 
+@mcp.tool()
+def ppt_split_slide_to_progressive_deck(
+    slide_index: int,
+    shape_ids_or_names: Optional[List[Any]] = None,
+    mode: str = "dim",
+    highlight_border_color_hex: str = "#2563EB",
+    keep_master_slide: bool = False,
+) -> Dict[str, Any]:
+    """Split a multi-element slide into N progressive sequential slides,
+    where on each slide one element is highlighted while previous are dimmed and future are hidden/dimmed.
+    Args:
+        slide_index: 1-indexed slide number.
+        shape_ids_or_names: Optional list of shape IDs or names in reveal order. If omitted, auto-detects content shapes.
+        mode: How future elements appear: 'dim' (faded out) or 'hide' (completely invisible).
+        highlight_border_color_hex: Border color for the active highlighted element.
+        keep_master_slide: Whether to keep the initial un-split slide.
+    """
+    return controller.split_slide_to_progressive_deck(
+        slide_index=slide_index,
+        shape_ids_or_names=shape_ids_or_names,
+        mode=mode,
+        highlight_border_color_hex=highlight_border_color_hex,
+        keep_master_slide=keep_master_slide,
+    )
+
+
+@mcp.tool()
+def ppt_create_progressive_deck(
+    title: str,
+    steps: List[Dict[str, str]],
+    accent_color_hex: str = "#2563EB",
+    bg_color_hex: str = "#FFFFFF",
+) -> Dict[str, Any]:
+    """Generate a complete multi-slide progressive reveal storyline presentation from steps.
+    Each slide highlights the current step, advances the top progress tracker, and dims prior steps.
+    Args:
+        title: Deck / presentation topic title.
+        steps: List of step dicts: [{'title': 'Step 1', 'description': 'Details...'}]
+        accent_color_hex: Active highlight theme color.
+        bg_color_hex: Slide background color.
+    """
+    return controller.create_progressive_deck(
+        title=title,
+        steps=steps,
+        accent_color_hex=accent_color_hex,
+        bg_color_hex=bg_color_hex,
+    )
+
+
+@mcp.tool()
+def ppt_animate_sequence(
+    slide_index: int,
+    shape_ids_or_names: List[Any],
+    effect: str = "fade",
+    trigger: str = "on_click",
+    duration: float = 0.5,
+) -> Dict[str, Any]:
+    """Apply sequential entrance animations to a list of shapes on a single slide.
+    Args:
+        slide_index: 1-indexed slide number.
+        shape_ids_or_names: List of shape IDs or names in animation order.
+        effect: Entrance effect: 'fade', 'fly_in', 'zoom', 'wipe', 'bounce', 'rise_up'.
+        trigger: 'on_click' (user click/advance), 'after_previous', 'with_previous'.
+        duration: Animation duration in seconds (default 0.5s).
+    """
+    return controller.animate_sequence(
+        slide_index=slide_index,
+        shape_ids_or_names=shape_ids_or_names,
+        effect=effect,
+        trigger=trigger,
+        duration=duration,
+    )
+
+
+@mcp.tool()
+def ppt_animate_bullet_points(
+    slide_index: int,
+    shape_id_or_name: Any,
+    effect: str = "fade",
+) -> Dict[str, Any]:
+    """Animate bullet points or paragraphs in a textbox one by one on click.
+    Args:
+        slide_index: 1-indexed slide number.
+        shape_id_or_name: ID or name of textbox shape.
+        effect: Entrance effect: 'fade', 'fly_in', 'zoom', 'wipe'.
+    """
+    return controller.animate_bullet_points(
+        slide_index=slide_index,
+        shape_id_or_name=shape_id_or_name,
+        effect=effect,
+    )
+
+
+@mcp.tool()
+def ppt_animate_emphasis(
+    slide_index: int,
+    shape_id_or_name: Any,
+    effect: str = "pulse",
+    trigger: str = "on_click",
+) -> Dict[str, Any]:
+    """Add emphasis animation (pulse, grow_shrink, spin, teeter) to a shape.
+    Args:
+        slide_index: 1-indexed slide number.
+        shape_id_or_name: ID or name of shape to emphasize.
+        effect: Emphasis effect: 'pulse', 'grow_shrink', 'spin', 'teeter', 'color_wave'.
+        trigger: 'on_click', 'after_previous', 'with_previous'.
+    """
+    return controller.animate_emphasis(
+        slide_index=slide_index,
+        shape_id_or_name=shape_id_or_name,
+        effect=effect,
+        trigger=trigger,
+    )
+
+
+@mcp.tool()
+def ppt_animate_exit(
+    slide_index: int,
+    shape_id_or_name: Any,
+    effect: str = "fade",
+    trigger: str = "on_click",
+) -> Dict[str, Any]:
+    """Add exit animation (fade_out, disappear, fly_out) to dismiss a shape.
+    Args:
+        slide_index: 1-indexed slide number.
+        shape_id_or_name: ID or name of shape to dismiss.
+        effect: Exit effect: 'fade', 'fly_in', 'zoom', 'wipe', 'appear'.
+        trigger: 'on_click', 'after_previous'.
+    """
+    return controller.animate_exit(
+        slide_index=slide_index,
+        shape_id_or_name=shape_id_or_name,
+        effect=effect,
+        trigger=trigger,
+    )
+
+
+@mcp.tool()
+def ppt_clear_animations(slide_index: Optional[int] = None) -> Dict[str, Any]:
+    """Clear all animation effects from a slide or all slides.
+    Args:
+        slide_index: Optional 1-indexed slide number. If omitted, clears animations on all slides.
+    """
+    return controller.clear_animations(slide_index=slide_index)
+
+
+@mcp.tool()
+def ppt_add_animated_stepper(
+    slide_index: int,
+    steps: List[Dict[str, str]],
+    left: float = 80,
+    top: float = 150,
+    width: float = 800,
+    height: float = 260,
+    animate: bool = True,
+    trigger: str = "on_click",
+) -> Dict[str, Any]:
+    """Create a process stepper pipeline with automatic sequential entrance animations.
+    Args:
+        slide_index: 1-indexed slide number.
+        steps: List of step dicts: [{'title': 'Discovery', 'description': 'User interviews'}]
+        left: X position in points.
+        top: Y position in points.
+        width: Pipeline width.
+        height: Pipeline height.
+        animate: Whether to attach sequential animations automatically.
+        trigger: 'on_click' or 'after_previous'.
+    """
+    return controller.add_animated_stepper(
+        slide_index=slide_index,
+        steps=steps,
+        left=left,
+        top=top,
+        width=width,
+        height=height,
+        animate=animate,
+        trigger=trigger,
+    )
+
+
 def main():
     mcp.run()
 
